@@ -48,7 +48,7 @@ Do not use full Clean Architecture / Repository abstractions mechanically for tr
 
 - Python 3.12+
 - FastAPI
-- PostgreSQL 16
+- PostgreSQL 18
 - SQLAlchemy 2.x Async
 - Alembic
 - Pydantic v2

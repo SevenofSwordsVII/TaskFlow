@@ -1,1 +1,49 @@
+# Dependencies & References
 Reference/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+env/
+dist/
+build/
+*.egg-info/
+# Testing & Reports
+playwright-report/
+test-results/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+
+# Node / Frontend
+node_modules/
+dist/
+coverage/
+*.log
+.npm/
+.vite/
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# OS / Editor artifacts
+.DS_Store
+Thumbs.db
+*.swp
+*.tmp
+.idea/
+.vscode/
+
+# Development tool runs & local artifacts
+strix_runs/
+.specify/
+specs/
+.claude/
+loadtests/results/*.csv
+loadtests/results/*.html

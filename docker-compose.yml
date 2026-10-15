@@ -1,6 +1,7 @@
 services:
   db:
-    image: postgres:16
+    image: postgres:18-alpine
+    restart: unless-stopped
     environment:
       POSTGRES_DB: ${POSTGRES_DB:-taskflow}
       POSTGRES_USER: ${POSTGRES_USER:-taskflow}
@@ -8,23 +9,93 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - postgres_data_v18:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-taskflow} -d ${POSTGRES_DB:-taskflow}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  migration:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      network: host
+    command: ["alembic", "upgrade", "head"]
+    restart: "no"
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      - ENVIRONMENT=development
+      - POSTGRES_SERVER=db
+      - POSTGRES_PORT=5432
+      - POSTGRES_USER=${POSTGRES_USER:-taskflow}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-change-me}
+      - POSTGRES_DB=${POSTGRES_DB:-taskflow}
+      - SECRET_KEY=${SECRET_KEY:-taskflow-super-secret-development-key-change-in-production-min-32-chars}
+      - ADMIN_SECRET_KEY=${ADMIN_SECRET_KEY:-taskflow-admin-session-signing-secret-change-in-production!}
+      - REFRESH_RECOVERY_KEY=${REFRESH_RECOVERY_KEY:-taskflow-recovery-key-change-in-prod-32b!}
 
   backend:
-    build: ./backend
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      network: host
+    restart: unless-stopped
     depends_on:
-      - db
-    env_file:
-      - .env
+      db:
+        condition: service_healthy
+      migration:
+        condition: service_completed_successfully
+    environment:
+      - ENVIRONMENT=development
+      - POSTGRES_SERVER=db
+      - POSTGRES_PORT=5432
+      - POSTGRES_USER=${POSTGRES_USER:-taskflow}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-change-me}
+      - POSTGRES_DB=${POSTGRES_DB:-taskflow}
+      - SECRET_KEY=${SECRET_KEY:-taskflow-super-secret-development-key-change-in-production-min-32-chars}
+      - ADMIN_SECRET_KEY=${ADMIN_SECRET_KEY:-taskflow-admin-session-signing-secret-change-in-production!}
+      - REFRESH_RECOVERY_KEY=${REFRESH_RECOVERY_KEY:-taskflow-recovery-key-change-in-prod-32b!}
     ports:
       - "8000:8000"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
 
   frontend:
-    build: ./frontend
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      target: runner
+    restart: unless-stopped
     depends_on:
-      - backend
+      backend:
+        condition: service_healthy
     ports:
-      - "5173:5173"
+      - "5173:80"
+
+  locust:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      network: host
+    command: ["locust", "-f", "/loadtests/locustfile.py", "--host", "${LOCUST_HOST:-http://backend:8000}"]
+    restart: "no"
+    volumes:
+      - ./loadtests:/loadtests
+    ports:
+      - "8089:8089"
+    environment:
+      - LOCUST_HOST=${LOCUST_HOST:-http://backend:8000}
+    depends_on:
+      backend:
+        condition: service_healthy
 
 volumes:
   postgres_data:
+  postgres_data_v18:

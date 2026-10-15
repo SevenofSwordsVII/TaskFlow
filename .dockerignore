@@ -1,0 +1,16 @@
+.git/
+.gitignore
+.claude/
+.specify/
+node_modules/
+.venv/
+venv/
+__pycache__/
+*.pyc
+dist/
+build/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.env
+.env.local
