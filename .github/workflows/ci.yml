@@ -1,0 +1,256 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+permissions:
+  contents: read
+
+jobs:
+  backend-quality:
+    name: Backend Quality (Ruff, Mypy, Pytest Unit & Integration)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@1edb52594c857e2b5813138261a3c508b411d457 # v5.3.0
+        with:
+          enable-cache: true
+          cache-dependency-glob: backend/uv.lock
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@42375524e23c412d93fb67b49958b491fce71c38 # v5.4.0
+        with:
+          python-version: "3.12"
+
+      - name: Install backend dependencies
+        run: uv sync --frozen --extra dev
+
+      - name: Lint with Ruff
+        run: uv run --extra dev ruff check .
+
+      - name: Type check with Mypy
+        run: uv run --extra dev mypy .
+
+      - name: Run unit and integration tests
+        run: uv run --extra dev pytest tests/unit tests/integration -v
+
+  postgres-integration:
+    name: PostgreSQL 18 Real Integration Tests
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    services:
+      postgres:
+        image: postgres:18-alpine
+        env:
+          POSTGRES_DB: taskflow_test
+          POSTGRES_USER: taskflow
+          POSTGRES_PASSWORD: taskflow_ci_test_password
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U taskflow -d taskflow_test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@1edb52594c857e2b5813138261a3c508b411d457 # v5.3.0
+        with:
+          enable-cache: true
+          cache-dependency-glob: backend/uv.lock
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@42375524e23c412d93fb67b49958b491fce71c38 # v5.4.0
+        with:
+          python-version: "3.12"
+
+      - name: Install backend dependencies
+        run: uv sync --frozen --extra dev
+
+      - name: Verify database safety and run schema migrations
+        env:
+          POSTGRES_SERVER: localhost
+          POSTGRES_PORT: 5432
+          POSTGRES_USER: taskflow
+          POSTGRES_PASSWORD: taskflow_ci_test_password
+          POSTGRES_DB: taskflow_test
+          DATABASE_URL: postgresql+asyncpg://taskflow:taskflow_ci_test_password@localhost:5432/taskflow_test
+          TEST_DATABASE_URL: postgresql+asyncpg://taskflow:taskflow_ci_test_password@localhost:5432/taskflow_test
+        run: |
+          uv run python -c "import asyncio; from tests.postgres.safety import verify_connected_database, get_raw_test_database_url; asyncio.run(verify_connected_database(get_raw_test_database_url()))"
+          uv run alembic upgrade head
+
+      - name: Run real PostgreSQL integration test suite
+        env:
+          TEST_DATABASE_URL: postgresql+asyncpg://taskflow:taskflow_ci_test_password@localhost:5432/taskflow_test
+        run: uv run --extra dev pytest tests/postgres/ -v
+
+  frontend-quality:
+    name: Frontend Quality (Lint, TypeScript, Unit Tests)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Set up Node.js 20
+        uses: actions/setup-node@1d0ff469b7ec7b3cb9d8673fde0c81c44821de2a # v4.2.0
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install frontend dependencies
+        run: npm ci
+
+      - name: Lint with ESLint
+        run: npm run lint
+
+      - name: Type check with TypeScript
+        run: npx tsc --noEmit
+
+      - name: Run frontend unit tests
+        run: npm test
+
+  e2e-playwright:
+    name: Playwright End-to-End Browser Tests
+    runs-on: ubuntu-latest
+    needs: [backend-quality, frontend-quality]
+    services:
+      postgres:
+        image: postgres:18-alpine
+        env:
+          POSTGRES_DB: taskflow_e2e_test
+          POSTGRES_USER: taskflow
+          POSTGRES_PASSWORD: taskflow_e2e_password
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U taskflow -d taskflow_e2e_test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@1edb52594c857e2b5813138261a3c508b411d457 # v5.3.0
+        with:
+          enable-cache: true
+          cache-dependency-glob: backend/uv.lock
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@42375524e23c412d93fb67b49958b491fce71c38 # v5.4.0
+        with:
+          python-version: "3.12"
+
+      - name: Set up Node.js 20
+        uses: actions/setup-node@1d0ff469b7ec7b3cb9d8673fde0c81c44821de2a # v4.2.0
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install backend dependencies
+        working-directory: backend
+        run: uv sync --frozen --extra dev
+
+      - name: Install frontend dependencies
+        working-directory: frontend
+        run: npm ci
+
+      - name: Install Playwright Chromium and OS dependencies
+        working-directory: frontend
+        run: npx playwright install --with-deps chromium
+
+      - name: Verify database safety and run migrations for E2E
+        working-directory: backend
+        env:
+          POSTGRES_SERVER: localhost
+          POSTGRES_PORT: 5432
+          POSTGRES_USER: taskflow
+          POSTGRES_PASSWORD: taskflow_e2e_password
+          POSTGRES_DB: taskflow_e2e_test
+          DATABASE_URL: postgresql+asyncpg://taskflow:taskflow_e2e_password@localhost:5432/taskflow_e2e_test
+          TEST_DATABASE_URL: postgresql+asyncpg://taskflow:taskflow_e2e_password@localhost:5432/taskflow_e2e_test
+        run: |
+          uv run python -c "import asyncio; from tests.postgres.safety import verify_connected_database, get_raw_test_database_url; asyncio.run(verify_connected_database(get_raw_test_database_url()))"
+          uv run alembic upgrade head
+
+      - name: Start FastAPI backend in background
+        working-directory: backend
+        env:
+          POSTGRES_SERVER: localhost
+          POSTGRES_PORT: 5432
+          POSTGRES_USER: taskflow
+          POSTGRES_PASSWORD: taskflow_e2e_password
+          POSTGRES_DB: taskflow_e2e_test
+          DATABASE_URL: postgresql+asyncpg://taskflow:taskflow_e2e_password@localhost:5432/taskflow_e2e_test
+          SECRET_KEY: ci-e2e-secret-key-development-min-32-chars-long!
+          ADMIN_SECRET_KEY: ci-e2e-admin-secret-key-min-32-chars!
+          REFRESH_RECOVERY_KEY: ci-e2e-refresh-recovery-key-32b!
+          ALLOWED_ORIGINS: "http://localhost:5173,http://127.0.0.1:5173"
+        run: |
+          nohup uv run uvicorn app.main:app --host 0.0.0.0 --port 8000 > /tmp/backend.log 2>&1 &
+          echo "Awaiting backend healthcheck on http://localhost:8000/health..."
+          for i in {1..30}; do
+            if curl -s http://localhost:8000/health > /dev/null; then
+              echo "Backend is healthy!"
+              break
+            fi
+            if [ $i -eq 30 ]; then
+              echo "Backend failed to become healthy. Logs:"
+              cat /tmp/backend.log
+              exit 1
+            fi
+            sleep 1
+          done
+
+      - name: Run Playwright E2E tests
+        working-directory: frontend
+        env:
+          CI: true
+          PLAYWRIGHT_BASE_URL: http://localhost:5173
+        run: npx playwright test
+
+      - name: Output backend logs on failure
+        if: failure()
+        run: |
+          if [ -f /tmp/backend.log ]; then
+            echo "=== Backend logs on failure ==="
+            cat /tmp/backend.log
+          fi
+
+      - name: Upload Playwright artifacts on failure
+        if: failure()
+        uses: actions/upload-artifact@4cec3d8aa04e39d1a68397de0c4cd6fb9dce8ec1 # v4.6.1
+        with:
+          name: playwright-failure-artifacts
+          path: |
+            frontend/playwright-report/
+            frontend/test-results/
+          retention-days: 7

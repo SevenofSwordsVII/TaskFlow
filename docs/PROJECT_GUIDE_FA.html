@@ -1,0 +1,1440 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>راهنمای جامع معماری و مهندسی نرم‌افزار TaskFlow</title>
+  <style>
+    :root {
+      --primary: #4f46e5;
+      --primary-dark: #3730a3;
+      --primary-light: #eef2ff;
+      --secondary: #0ea5e9;
+      --accent: #8b5cf6;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --bg: #f8fafc;
+      --surface: #ffffff;
+      --surface-alt: #f1f5f9;
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --code-bg: #1e293b;
+      --code-text: #e2e8f0;
+      --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+      --radius: 12px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      direction: rtl;
+      text-align: right;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Vazirmatn, Tahoma, Arial, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.8;
+      font-size: 15px;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+
+    /* Header */
+    header.hero {
+      background: linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #4338ca 100%);
+      color: #ffffff;
+      padding: 48px 32px;
+      border-radius: var(--radius);
+      margin-bottom: 32px;
+      box-shadow: 0 10px 25px -5px rgba(49, 46, 129, 0.3);
+      position: relative;
+      overflow: hidden;
+    }
+
+    header.hero h1 {
+      font-size: 2.2rem;
+      font-weight: 800;
+      margin-bottom: 12px;
+      letter-spacing: -0.5px;
+    }
+
+    header.hero p {
+      font-size: 1.1rem;
+      color: #c7d2fe;
+      max-width: 900px;
+      margin-bottom: 20px;
+    }
+
+    .hero-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 12px;
+      border-radius: 9999px;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
+    .badge-primary { background: rgba(255, 255, 255, 0.15); color: #ffffff; border: 1px solid rgba(255, 255, 255, 0.2); }
+    .badge-success { background: #dcfce7; color: #166534; }
+    .badge-warning { background: #fef3c7; color: #92400e; }
+    .badge-danger { background: #fee2e2; color: #991b1b; }
+    .badge-info { background: #e0f2fe; color: #075985; }
+
+    /* Layout */
+    .layout-grid {
+      display: grid;
+      grid-template-columns: 320px 1fr;
+      gap: 32px;
+      align-items: start;
+    }
+
+    @media (max-width: 1024px) {
+      .layout-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Sidebar TOC */
+    .sidebar-toc {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      position: sticky;
+      top: 24px;
+      max-height: calc(100vh - 48px);
+      overflow-y: auto;
+      box-shadow: var(--shadow);
+    }
+
+    .sidebar-toc h3 {
+      font-size: 1.1rem;
+      margin-bottom: 16px;
+      padding-bottom: 8px;
+      border-bottom: 2px solid var(--primary-light);
+      color: var(--primary-dark);
+    }
+
+    .sidebar-toc ol {
+      list-style-position: inside;
+      padding-right: 0;
+      font-size: 0.9rem;
+    }
+
+    .sidebar-toc li {
+      margin-bottom: 8px;
+      line-height: 1.5;
+    }
+
+    .sidebar-toc a {
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .sidebar-toc a:hover {
+      color: var(--primary);
+      font-weight: 600;
+    }
+
+    /* Main Content */
+    main.content {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 40px;
+      box-shadow: var(--shadow);
+    }
+
+    section {
+      margin-bottom: 56px;
+      scroll-margin-top: 32px;
+    }
+
+    section:last-child {
+      margin-bottom: 0;
+    }
+
+    h2 {
+      font-size: 1.6rem;
+      color: var(--text);
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    h2 .section-num {
+      background: var(--primary-light);
+      color: var(--primary);
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      font-weight: 700;
+    }
+
+    h3 {
+      font-size: 1.25rem;
+      color: var(--primary-dark);
+      margin: 28px 0 14px;
+    }
+
+    h4 {
+      font-size: 1.05rem;
+      color: var(--text);
+      margin: 20px 0 10px;
+    }
+
+    p {
+      margin-bottom: 16px;
+      text-align: justify;
+    }
+
+    ul, ol {
+      margin-bottom: 16px;
+      padding-right: 24px;
+    }
+
+    li {
+      margin-bottom: 6px;
+    }
+
+    /* Code and Technical Elements */
+    code, pre, .ltr, [dir="ltr"] {
+      direction: ltr !important;
+      text-align: left !important;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    }
+
+    code {
+      background-color: var(--surface-alt);
+      color: #b91c1c;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.9em;
+      border: 1px solid var(--border);
+    }
+
+    pre {
+      background-color: var(--code-bg);
+      color: var(--code-text);
+      padding: 18px;
+      border-radius: 8px;
+      overflow-x: auto;
+      margin: 16px 0;
+      font-size: 0.88rem;
+      line-height: 1.5;
+      border: 1px solid #334155;
+    }
+
+    pre code {
+      background: transparent;
+      color: inherit;
+      padding: 0;
+      border: none;
+      font-size: inherit;
+    }
+
+    /* Tables */
+    .table-container {
+      overflow-x: auto;
+      margin: 20px 0;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: right;
+      font-size: 0.9rem;
+    }
+
+    th {
+      background-color: var(--surface-alt);
+      color: var(--text);
+      font-weight: 700;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+    }
+
+    td {
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    tr:nth-child(even) td {
+      background-color: #fafbfc;
+    }
+
+    /* Callout Boxes */
+    .callout {
+      padding: 18px;
+      border-radius: 8px;
+      margin: 20px 0;
+      border-right: 4px solid;
+    }
+
+    .callout-info {
+      background-color: #eff6ff;
+      border-right-color: var(--primary);
+      color: #1e3a8a;
+    }
+
+    .callout-warning {
+      background-color: #fffbeb;
+      border-right-color: var(--warning);
+      color: #78350f;
+    }
+
+    .callout-success {
+      background-color: #f0fdf4;
+      border-right-color: var(--success);
+      color: #14532d;
+    }
+
+    .callout-danger {
+      background-color: #fef2f2;
+      border-right-color: var(--danger);
+      color: #7f1d1d;
+    }
+
+    .callout strong {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 1rem;
+    }
+
+    /* Diagrams */
+    .diagram-container {
+      background: var(--surface-alt);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 20px;
+      margin: 20px 0;
+      text-align: center;
+      overflow-x: auto;
+    }
+
+    .diagram-container svg {
+      max-width: 100%;
+      height: auto;
+    }
+
+    /* Feature Deep Dive Card */
+    .feature-card {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 24px;
+      margin: 20px 0;
+      background: #ffffff;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+
+    .feature-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 12px;
+    }
+
+    .feature-card-header h4 {
+      margin: 0;
+      color: var(--primary);
+      font-size: 1.15rem;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    @media (max-width: 768px) {
+      .grid-2 {
+        grid-template-columns: 1fr;
+      }
+      main.content {
+        padding: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- Header -->
+  <header class="hero">
+    <h1>مستندات جامع فنی، معماری و راهنمای مهندسی TaskFlow</h1>
+    <p>تحلیل سیستماتیک و مبتنی بر شواهد کل پایگاه کد: پلتفرم مدیریت پروژه چندمستأجره (Multi-Tenant SaaS) و تابلوی کانبان مقیاس‌پذیر با معماری Modular Monolith، پایتون ۳.۱۲+، فست‌ای‌پی‌آی، پستگرس ۱۸، ری‌اکت و تایپ‌اسکریپت.</p>
+    <div class="hero-meta">
+      <span class="badge badge-primary">نسخه نرم‌افزار: 0.1.0</span>
+      <span class="badge badge-primary">محیط اجرا: Docker Compose</span>
+      <span class="badge badge-primary">پایگاه داده: PostgreSQL 18</span>
+      <span class="badge badge-primary">احراز هویت: OAuth2 + Argon2id + JWT + HttpOnly Cookies</span>
+      <span class="badge badge-success">وضعیت تست‌ها: ۵۹ تست موفق (۱۰۰٪)</span>
+    </div>
+  </header>
+
+  <div class="layout-grid">
+
+    <!-- Table of Contents Sidebar -->
+    <aside class="sidebar-toc">
+      <h3>فهرست مطالب</h3>
+      <ol>
+        <li><a href="#sec-1">نمای کلی و دامنه کسب‌وکار</a></li>
+        <li><a href="#sec-2">ساختار کامل مخزن (Repository Tree)</a></li>
+        <li><a href="#sec-3">معماری سیستم و تصمیمات کلیدی</a></li>
+        <li><a href="#sec-4">معماری و کامپوننت‌های فرانت‌اند</a></li>
+        <li><a href="#sec-5">معماری و لایه‌بندی بک‌اند</a></li>
+        <li><a href="#sec-6">تحلیل عمیق تک‌تک قابلیت‌های پیاده‌سازی‌شده</a></li>
+        <li><a href="#sec-7">احراز هویت و چرخه نشست (Authentication Lifecycle)</a></li>
+        <li><a href="#sec-8">سطوح دسترسی سازمانی و ایزولاسیون مستأجر (RBAC)</a></li>
+        <li><a href="#sec-9">مدل داده، روابط جداول و مایگریشن‌های Alembic</a></li>
+        <li><a href="#sec-10">کاتالوگ جامع نقاط انتهایی API (Endpoints)</a></li>
+        <li><a href="#sec-11">جریان‌های اجرایی انتها به انتها (End-to-End Flows)</a></li>
+        <li><a href="#sec-12">معماری کانتینری Docker و سرویس‌ها</a></li>
+        <li><a href="#sec-13">تنظیمات متغیرهای محیطی (Environment Configuration)</a></li>
+        <li><a href="#sec-14">سیستم تست خودکار و اعتبارسنجی کیفیت</a></li>
+        <li><a href="#sec-15">لاگینگ، اشکال‌زدایی و آزمون کارایی (Locust)</a></li>
+        <li><a href="#sec-16">معماری امنیت، نقاط قوت و ریسک‌ها</a></li>
+        <li><a href="#sec-17">قابلیت‌های مدیریتی (Admin Capabilities Audit)</a></li>
+        <li><a href="#sec-18">قابلیت‌های ناتمام و محدودیت‌های فعلی</a></li>
+        <li><a href="#sec-19">راهنمای گام‌به‌گام راه‌اندازی و توسعه محلی</a></li>
+        <li><a href="#sec-20">واژه‌نامه تخصصی (Glossary)</a></li>
+      </ol>
+    </aside>
+
+    <!-- Main Documentation Body -->
+    <main class="content">
+
+      <!-- SECTION 1 -->
+      <section id="sec-1">
+        <h2><span class="section-num">۱</span> نمای کلی، هدف و دامنه کسب‌وکار TaskFlow</h2>
+        <p><strong>TaskFlow</strong> یک نرم‌افزار تجاری مدیریت پروژه ابری مبتنی بر مدل چندمستأجره (Multi-Tenant SaaS) است که با الهام از سیستم‌های مدرنی نظیر Trello و Linear طراحی و مهندسی شده است. این نرم‌افزار به سازمان‌ها، شرکت‌ها و تیم‌های نرم‌افزاری امکان می‌دهد تا فضاهای کاری مستقل ایجاد کرده، پروژه‌ها و اعضا را مدیریت نمایند و از تابلوهای تعاملی کانبان (Kanban Boards) با کارایی بالا برای پیگیری وظایف استفاده کنند.</p>
+
+        <h3>جامعه کاربران و ذی‌نفعان</h3>
+        <ul>
+          <li><strong>مالکان سازمان (Organization Owners):</strong> اشخاصی که سازمان کاری را ایجاد کرده، حق انحصاری انتقال مالکیت، انتصاب مدیران و مدیریت صورت‌حساب را بر عهده دارند.</li>
+          <li><strong>مدیران سازمان (Organization Admins):</strong> کنترل‌کنندگان فضای کاری که صلاحیت ارسال دعوت‌نامه، تغییر نقش اعضا، ایجاد پروژه‌ها و بازرسی لاگ‌های امنیتی را دارند.</li>
+          <li><strong>اعضای تیم (Members):</strong> توسعه‌دهندگان و کارشناسانی که در پروژه‌ها وظایف را تعریف، جابه‌جا و تکمیل کرده و روی تسک‌ها کامنت می‌گذارند.</li>
+          <li><strong>بینندگان (Viewers):</strong> ناظران پروژه‌ها یا ذی‌نفعان خارجی که مجوز مشاهده داده‌ها را دارند اما هیچ‌گونه دسترسی جهش داده (Mutation) ندارند.</li>
+        </ul>
+
+        <div class="callout callout-info">
+          <strong>فلسفه طراحی پروژه:</strong>
+          پروژه TaskFlow بر اساس اصول مهندسی مقاوم (Resilient Engineering) پیاده‌سازی شده است: پرهیز از پیچیدگی غیرضروری میکروفرانت‌اند و میکروسرویس، استفاده از ساختار <em>Modular Monolith</em> با مرزبندی‌های مشخص، کنترل هم‌روندی خوش‌بینانه در جابه‌جایی تسک‌ها، و محرمانگی سخت‌گیرانه مرز مستأجران (Tenant Concealment).
+        </div>
+      </section>
+
+      <!-- SECTION 2 -->
+      <section id="sec-2">
+        <h2><span class="section-num">۲</span> ساختار کامل مخزن (Repository Tree)</h2>
+        <p>مخزن TaskFlow دارای ساختار دوگانه تمیز با تفکیک کامل بک‌اند و فرانت‌اند و مستندات توسعه است:</p>
+        <pre dir="ltr"><code>TaskFlow/
+├── backend/
+│   ├── alembic/                       # پیکربندی و کدهای مایگریشن Alembic
+│   │   ├── versions/                  # فایل‌های مایگریشن 001 تا 004
+│   │   ├── env.py                     # پیکربندی محیط غیرهمگام Alembic با هدف target_metadata
+│   │   └── script.py.mako             # تمپلیت جنریت کردن مایگریشن جدید
+│   ├── app/
+│   │   ├── core/                      # هسته اشتراکی و ابزارهای زیرساختی بک‌اند
+│   │   │   ├── base.py                # رجیستری مرکزی متادیتای SQLAlchemy و کلاس‌های میکس‌این
+│   │   │   ├── config.py              # تنظیمات با Pydantic Settings و اعتبارسنجی CORS
+│   │   │   ├── database.py            # مدیریت Engine و نشست‌های ناهمگام (AsyncSessionLocal)
+│   │   │   ├── dependencies.py        # وابستگی‌های فست‌ای‌پی‌آی (RBAC, Auth, Tenant Guards)
+│   │   │   ├── exceptions.py          # خطاهای استاندارد تجاری و هندلرهای سراسری JSON
+│   │   │   ├── logging.py             # لاگینگ ساختاریافته به همراه شناسه همبستگی CorrelationId
+│   │   │   └── security.py            # هش رمز عبور، مدیریت JWT، انکریپشن AES-256-GCM و Rate Limiter
+│   │   ├── modules/                   # ماژول‌های برش عمودی (Vertical Slices)
+│   │   │   ├── audit_logs/            # ماژول ثبت رویدادهای تغییرناپذیر ممیزی و امنیت
+│   │   │   ├── auth/                  # احراز هویت، چرخش توکن با ریکاوری و نشست‌های کاربری
+│   │   │   ├── comments/              # کامنت‌گذاری و بحث پیرامون تسک‌ها
+│   │   │   ├── kanban/                # تابلوها، ستون‌ها، تسک‌ها، LexoRank و کنترل OCC
+│   │   │   ├── notifications/         # اعلان‌های درون‌برنامه‌ای کاربران و صندوق دریافت
+│   │   │   ├── organizations/         # فضاهای کاری، عضویت، نقش‌ها و دعوت‌نامه‌ها
+│   │   │   ├── projects/              # مدیریت پروژه‌ها و سطوح رویت‌پذیری (Public/Restricted)
+│   │   │   └── users/                 # پروفایل کاربری و حذف امن حساب کاربری
+│   │   └── main.py                    # نقطه ورود اصلی اپلیکیشن FastAPI و رجیستر میدلورها
+│   ├── tests/                         # آزمون‌های خودکار بک‌اند
+│   │   ├── integration/               # آزمون‌های چندمستأجری، چرخه حیات، کانبان و هم‌روندی
+│   │   └── unit/                      # آزمون‌های منطق ریاضی رتبه‌بندی LexoRank و مدل‌های امنیتی
+│   ├── Dockerfile                     # داکرفایل محیط تولیدی پایتون ۳.۱۲-slim
+│   └── pyproject.toml                 # فایل وابستگی‌های پایتون و پیکربندی ابزارهای Ruff, mypy, pytest
+├── frontend/
+│   ├── src/
+│   │   ├── api/                       # کلاینت API با پشتیبانی از مکانیزم Web Locks و تکرار 401
+│   │   │   └── client.ts
+│   │   ├── features/                  # مؤلفه‌ها و هوک‌های تفکیک‌شده بر اساس قابلیت
+│   │   │   ├── kanban/                # تابلو، ستون‌ها، کارت تسک، دیالوگ کامنت و هوک useKanbanBoard
+│   │   │   ├── notifications/         # صندوق ورودی اعلان‌ها و دکمه نشان‌دار کردن خوانده‌شده
+│   │   │   └── organizations/         # لیست اعضا و مودال دعوت اعضای جدید
+│   │   ├── pages/                     # صفحات روت‌های برنامه (Login, Register, Projects, Board, ...)
+│   │   ├── store/                     # استیت استورهای Zustand (ذخیره حافظه‌ای امن توکن)
+│   │   ├── App.tsx                    # پیکربندی روت‌ها، گاردهای ورود و کلاینت React Query
+│   │   └── main.tsx                   # رندر برنامه ری‌اکت در DOM
+│   ├── tests/e2e/                     # آزمون‌های Playwright سناریوهای کاربر
+│   ├── nginx.conf                     # وب‌سرور انجین‌ایکس برای پروکسی معکوس و SPA Routing
+│   ├── Dockerfile                     # ساخت دو مرحله‌ای کلاینت (Node -> Nginx)
+│   └── package.json                   # پکیج‌ها و اسکریپت‌های کلاینت
+├── docs/                              # مستندات پروژه
+│   ├── ADMIN_AUDIT.md                 # گزارش ممیزی قابلیت‌های مدیریتی
+│   ├── PROJECT_GUIDE_FA.html          # همین راهنمای جامع فارسی
+│   └── PROJECT_STRUCTURE.md           # درخت فنی ساختار پروژه
+├── loadtests/                         # آزمون‌های بارگذاری مبتنی بر Locust
+│   ├── locustfile.py                  # سناریوهای پرفشار کاربران هم‌روند
+│   └── test_route_inventory.py       # اعتبارسنجی تطابق روت‌های ثبت‌شده
+├── docker-compose.yml                 # ارکستراسیون کانتینرهای db, migration, backend, frontend, locust
+├── Makefile                           # میانبرهای دستوری توسعه
+└── README.md                          # مستندات انگلیسی ریپازیتوری
+</code></pre>
+      </section>
+
+      <!-- SECTION 3 -->
+      <section id="sec-3">
+        <h2><span class="section-num">۳</span> معماری سیستم و تصمیمات کلیدی</h2>
+        <p>سیستم TaskFlow از الگوی <strong>Modular Monolith</strong> با رویکرد <strong>Vertical Slice</strong> پیروی می‌کند. این انتخاب معماری بر اساس تحلیل دقیق هزینه و فایده در برابر میکروسرویس‌ها اتخاذ شده است:</p>
+
+        <div class="diagram-container">
+          <svg viewBox="0 0 850 280" width="850" height="280" xmlns="http://www.w3.org/2000/svg">
+            <rect x="10" y="10" width="830" height="260" rx="12" fill="#ffffff" stroke="#cbd5e1" stroke-width="2"/>
+            <text x="425" y="38" text-anchor="middle" font-family="sans-serif" font-size="16" font-weight="bold" fill="#1e293b">معماری کلان TaskFlow (Modular Monolith)</text>
+
+            <!-- Frontend Block -->
+            <rect x="30" y="60" width="220" height="180" rx="8" fill="#e0e7ff" stroke="#6366f1" stroke-width="1.5"/>
+            <text x="140" y="85" text-anchor="middle" font-family="sans-serif" font-size="14" font-weight="bold" fill="#312e81">لایـه کلاینت (SPA)</text>
+            <text x="140" y="115" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#4338ca">React 18 + Vite</text>
+            <text x="140" y="140" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#4338ca">TanStack Query v5 (Server State)</text>
+            <text x="140" y="165" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#4338ca">Zustand (In-Memory Auth)</text>
+            <text x="140" y="190" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#4338ca">Web Locks API (Refresh Lock)</text>
+            <text x="140" y="215" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#4338ca">@hello-pangea/dnd (Kanban)</text>
+
+            <!-- Gateway Block -->
+            <rect x="290" y="85" width="130" height="130" rx="8" fill="#f1f5f9" stroke="#94a3b8" stroke-width="1.5"/>
+            <text x="355" y="115" text-anchor="middle" font-family="sans-serif" font-size="14" font-weight="bold" fill="#334155">Nginx Ingress</text>
+            <text x="355" y="145" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#475569">Port 5173 / 80</text>
+            <text x="355" y="170" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#475569">SPA try_files</text>
+            <text x="355" y="190" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#475569">Reverse Proxy /api/</text>
+
+            <!-- Backend Modules -->
+            <rect x="460" y="60" width="220" height="180" rx="8" fill="#ede9fe" stroke="#8b5cf6" stroke-width="1.5"/>
+            <text x="570" y="85" text-anchor="middle" font-family="sans-serif" font-size="14" font-weight="bold" fill="#4c1d95">FastAPI Modular Monolith</text>
+            <text x="570" y="112" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#6d28d9">Core: Security, Logging, DB</text>
+            <text x="570" y="134" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#6d28d9">Auth: Argon2id, AES Recovery</text>
+            <text x="570" y="156" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#6d28d9">Organizations &amp; Projects RBAC</text>
+            <text x="570" y="178" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#6d28d9">Kanban: LexoRank, OCC Moves</text>
+            <text x="570" y="200" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#6d28d9">Comments, Notifications, Audit</text>
+            <text x="570" y="222" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#6d28d9">CorrelationId &amp; CSRF Middlewares</text>
+
+            <!-- DB Block -->
+            <rect x="720" y="85" width="100" height="130" rx="8" fill="#dbeafe" stroke="#3b82f6" stroke-width="1.5"/>
+            <text x="770" y="115" text-anchor="middle" font-family="sans-serif" font-size="13" font-weight="bold" fill="#1e40af">PostgreSQL</text>
+            <text x="770" y="135" text-anchor="middle" font-family="sans-serif" font-size="12" font-weight="bold" fill="#1e40af">نسخه ۱۸</text>
+            <text x="770" y="165" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#2563eb">Async SQLAlchemy</text>
+            <text x="770" y="185" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#2563eb">15 Tables</text>
+            <text x="770" y="205" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#2563eb">Alembic 004</text>
+
+            <!-- Connectors -->
+            <line x1="250" y1="150" x2="290" y2="150" stroke="#64748b" stroke-width="2" marker-end="url(#arrow)"/>
+            <line x1="420" y1="150" x2="460" y2="150" stroke="#64748b" stroke-width="2"/>
+            <line x1="680" y1="150" x2="720" y2="150" stroke="#64748b" stroke-width="2"/>
+          </svg>
+        </div>
+
+        <h3>اصول و تصمیمات معماری اتخاذشده</h3>
+        <ol>
+          <li><strong>انسجام بالای دامنه کانبان (High Cohesion in Kanban):</strong> مفاهیم تابلو (Board)، ستون (List) و وظیفه (Task) به شدت به یکدیگر وابسته هستند. تفکیک آن‌ها در سرویس‌های مستقل باعث پدیده چرخه‌های توزیع‌شده و تأخیر شبکه در رندر ساختار درختی می‌شد؛ بنابراین تمام این موجودیت‌ها در ماژول واحد <code dir="ltr">backend/app/modules/kanban</code> قرار دارند.</li>
+          <li><strong>پرهیز از پیچیدگی زودرس (YAGNI & No Premature Infrastructure):</strong> صف‌های سنگین مانند Celery و کش توزیع‌شده مانند Redis تا پیش از توجیه قطعی نیاز عملیاتی حذف شده‌اند. پایگاه داده PostgreSQL 18 تمام نیازمندی‌های هماهنگی، تراکنش‌ها و قفل‌های ردیفی را با بالاترین قابلیت اطمینان پاسخ می‌دهد.</li>
+          <li><strong>پنهان‌سازی وجود مستأجر (Tenant Concealment):</strong> اگر کاربری شناسه یک سازمان یا پروژه که عضو آن نیست را ارسال کند، سیستم به جای پاسخ <code dir="ltr">403 Forbidden</code> کد <code dir="ltr">404 Not Found</code> برمی‌گرداند تا از حملات سرشماری شناسه (ID Enumeration) جلوگیری شود.</li>
+          <li><strong>تفکیک قاطع وضعیت سرور و کلاینت:</strong> در فرانت‌اند، TanStack Query متولی داده‌های دریافت شده از سرور است، در حالی که Zustand صرفاً وظیفه نگهداری وضعیت نشست فعلی در حافظه موقت (In-Memory) را بر عهده دارد تا از تکثیر بیهوده کش و ناهماهنگی وضعیت جلوگیری شود.</li>
+        </ol>
+      </section>
+
+      <!-- SECTION 4 -->
+      <section id="sec-4">
+        <h2><span class="section-num">۴</span> معماری و کامپوننت‌های فرانت‌اند</h2>
+        <p>بخش فرانت‌اند TaskFlow با استفاده از React 18، زبان TypeScript و بستر بیلد سریع Vite توسعه یافته و از کتابخانه‌های Tailwind CSS و <code dir="ltr">@hello-pangea/dnd</code> برای تعاملات کشیدن و رها کردن بهره می‌برد.</p>
+
+        <h3>صفحات و روت‌های اصلی برنامه</h3>
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>مسیر روت (Route)</th>
+                <th>فایل کامپوننت</th>
+                <th>وضعیت گارد حفاظتی</th>
+                <th>مسئولیت صفحه</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code dir="ltr">/login</code></td>
+                <td><code dir="ltr">frontend/src/pages/LoginPage.tsx</code></td>
+                <td>عمومی</td>
+                <td>احراز هویت کاربر و ورود به سیستم با هدایت خودکار در صورت داشتن توکن</td>
+              </tr>
+              <tr>
+                <td><code dir="ltr">/register</code></td>
+                <td><code dir="ltr">frontend/src/pages/RegisterPage.tsx</code></td>
+                <td>عمومی</td>
+                <td>ثبت نام کاربر جدید با اعتبارسنجی فیلدهای نام، ایمیل و رمز عبور</td>
+              </tr>
+              <tr>
+                <td><code dir="ltr">/organizations/select</code></td>
+                <td><code dir="ltr">frontend/src/pages/OrganizationSelectPage.tsx</code></td>
+                <td>محافظت‌شده (<code dir="ltr">ProtectedRoute</code>)</td>
+                <td>انتخاب سازمان فعال، ایجاد سازمان جدید و مشاهده نقش کاربر</td>
+              </tr>
+              <tr>
+                <td><code dir="ltr">/projects</code></td>
+                <td><code dir="ltr">frontend/src/pages/ProjectsPage.tsx</code></td>
+                <td>محافظت‌شده (<code dir="ltr">ProtectedRoute</code>)</td>
+                <td>داشبورد پروژه‌ها، ایجاد پروژه جدید برای ادمین‌ها و لینک باز کردن تابلو</td>
+              </tr>
+              <tr>
+                <td><code dir="ltr">/projects/:projectId/settings</code></td>
+                <td><code dir="ltr">frontend/src/pages/ProjectSettingsPage.tsx</code></td>
+                <td>محافظت‌شده (<code dir="ltr">ProtectedRoute</code>)</td>
+                <td>تنظیمات سطح رویت‌پذیری، نام، توضیحات و مدیریت اعضای اختصاصی پروژه</td>
+              </tr>
+              <tr>
+                <td><code dir="ltr">/boards</code> و <code dir="ltr">/boards/:boardId</code></td>
+                <td><code dir="ltr">frontend/src/pages/BoardPage.tsx</code></td>
+                <td>محافظت‌شده (<code dir="ltr">ProtectedRoute</code>)</td>
+                <td>نمایش تعاملی تابلوی کانبان، حل شناسه پروژه با کوئری <code dir="ltr">?project=...</code> و مدیریت ستون‌ها و تسک‌ها</td>
+              </tr>
+              <tr>
+                <td><code dir="ltr">/settings/members</code></td>
+                <td><code dir="ltr">frontend/src/pages/MembersPage.tsx</code></td>
+                <td>محافظت‌شده (<code dir="ltr">ProtectedRoute</code>)</td>
+                <td>مدیریت اعضای سازمان، تغییر نقش‌ها، حذف اعضا و ارسال دعوت‌نامه جدید</td>
+              </tr>
+              <tr>
+                <td><code dir="ltr">/settings/audit-logs</code></td>
+                <td><code dir="ltr">frontend/src/pages/AuditLogsPage.tsx</code></td>
+                <td>محافظت‌شده (فقط OWNER و ADMIN)</td>
+                <td>بازرسی لاگ‌های ثبت‌شده از تغییرات امنیتی و عملیاتی فضای کاری</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>مؤلفه‌های هوشمند و هوک‌ها</h3>
+        <ul>
+          <li><strong>کلاینت API و مدیریت هم‌روندی تب‌ها (<code dir="ltr">frontend/src/api/client.ts</code>):</strong> درخواست‌ها با ارسال خودکار توکن Bearer در هدر Authorization همراه هستند. در صورت دریافت خطای 401، یک اینترسپتور هوشمند عملیات چرخش توکن را فراخوانی می‌کند. برای جلوگیری از ارسال هم‌زمان درخواست چرخش توسط چندین تب مرورگر، از استاندارد بومی <strong>Web Locks API</strong> مرورگر (<code dir="ltr">navigator.locks.request("taskflow_auth_refresh")</code>) استفاده شده است تا منحصراً یک تب توکن را تمدید کرده و بقیه تب‌ها پس از باز شدن قفل از نتیجه استفاده نمایند.</li>
+          <li><strong>استیت استور Zustand (<code dir="ltr">frontend/src/store/authStore.ts</code>):</strong> برای محافظت در برابر حملات XSS، توکن دسترسی (Access Token) صرفاً در متغیرهای حافظه جاوااسکریپت نگهداری می‌شود و هیچ‌گاه در <code dir="ltr">localStorage</code> ذخیره نمی‌گردد.</li>
+          <li><strong>هوک تابلوی کانبان (<code dir="ltr">frontend/src/features/kanban/hooks/useKanbanBoard.ts</code>):</strong> این هوک پیاده‌سازی الگوهای Optimistic UI، محاسبه شناسه‌های تسک‌های مجاور برای تعیین رتبه‌بندی LexoRank و بازگرداندن تغییرات (Rollback) در صورت بروز تداخل ۴۰۹ یا خطاهای شبکه را مدیریت می‌کند.</li>
+        </ul>
+      </section>
+
+      <!-- SECTION 5 -->
+      <section id="sec-5">
+        <h2><span class="section-num">۵</span> معماری و لایه‌بندی بک‌اند</h2>
+        <p>بک‌اند TaskFlow بر پایه فریم‌ورک غیرهمگام <strong>FastAPI 0.115+</strong> و موتور دیتابیس <strong>SQLAlchemy 2.x Async</strong> ساخته شده است. ساختار هر ماژول شامل لایه‌های زیر است:</p>
+
+        <div class="grid-2">
+          <div class="feature-card">
+            <div class="feature-card-header">
+              <h4>لایه‌های درون ماژولی</h4>
+            </div>
+            <ul>
+              <li><strong><code dir="ltr">models.py</code>:</strong> تعاریف جدول و فیلدهای دیتابیس با ارث‌بری از <code dir="ltr">Base</code> و میکس‌این‌های <code dir="ltr">UUIDPrimaryKeyMixin</code>, <code dir="ltr">TimestampMixin</code> و <code dir="ltr">SoftDeleteMixin</code>.</li>
+              <li><strong><code dir="ltr">schemas.py</code>:</strong> مدل‌های سریال‌سازی و اعتبارسنجی ورودی/خروجی Pydantic v2.</li>
+              <li><strong><code dir="ltr">router.py</code>:</strong> نقاط انتهایی HTTP به همراه تزریق وابستگی‌های احراز هویت و بررسی سطح دسترسی.</li>
+              <li><strong><code dir="ltr">service.py</code>:</strong> منطق خالص کسب‌وکار، محاسبات تراکنشی، قفل‌های دیتابیس و اعتبارسنجی قوانین تجاری.</li>
+              <li><strong><code dir="ltr">repository.py</code>:</strong> لایه انتزاعی پرس‌وجوهای پیچیده دیتابیس (در صورت نیاز).</li>
+            </ul>
+          </div>
+          <div class="feature-card">
+            <div class="feature-card-header">
+              <h4>میدلورها و مدیریت خطا در <code dir="ltr">main.py</code></h4>
+            </div>
+            <ul>
+              <li><strong><code dir="ltr">CorrelationIdMiddleware</code>:</strong> تخصیص یک UUID به هر درخواست ورودی جهت رهگیری انتها به انتها در تمام لاگ‌های سرور.</li>
+              <li><strong><code dir="ltr">TrustedOriginMiddleware</code>:</strong> بررسی مقدار هدر Origin در متدهای جهش داده (<code dir="ltr">POST, PUT, PATCH, DELETE</code>) در برابر دامنه‌های مجاز CORS به منظور مقابله کامل با حملات CSRF.</li>
+              <li><strong><code dir="ltr">register_exception_handlers</code>:</strong> تبدیل تمام استثناهای پیش‌بینی نشده یا <code dir="ltr">AppException</code> به خروجی‌های ساختاریافته استاندارد با ساختار <code dir="ltr">{"error": {"code": "...", "message": "...", "details": ...}}</code>.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 6 -->
+      <section id="sec-6">
+        <h2><span class="section-num">۶</span> تحلیل عمیق تک‌تک قابلیت‌های پیاده‌سازی‌شده</h2>
+
+        <!-- Feature 1 -->
+        <div class="feature-card">
+          <div class="feature-card-header">
+            <h4>۱. احراز هویت و مدیریت نشست کاربر (Authentication &amp; Session Lifecycle)</h4>
+            <span class="badge badge-success">پیاده‌سازی و اعتبارسنجی‌شده</span>
+          </div>
+          <p><strong>شرح کارکرد:</strong> ثبت نام امن با رمزگذاری Argon2id، ورود مطابق استاندارد OAuth2 Password Flow با نام کاربری و رمز، صدور توکن دسترسی ۱۵ دقیقه‌ای و کوکی ریفرش توکن ۳۰ روزه با پرچم‌های <code dir="ltr">HttpOnly</code> و <code dir="ltr">SameSite=Lax</code>.</p>
+          <p><strong>فایل‌های مجری:</strong> <code dir="ltr">backend/app/modules/auth/service.py</code>, <code dir="ltr">router.py</code>, <code dir="ltr">backend/app/core/security.py</code>, <code dir="ltr">frontend/src/api/client.ts</code></p>
+          <p><strong>مراحل عملکرد گام‌به‌گام:</strong></p>
+          <ol>
+            <li>کاربر مشخصات ورود را به <code dir="ltr">POST /api/v1/auth/token</code> ارسال می‌کند.</li>
+            <li>تابع <code dir="ltr">check_auth_rate_limit</code> با نرخ ۱۰ درخواست در دقیقه اعتبارسنجی بروت‌فورس انجام می‌دهد.</li>
+            <li>پس از اعتبارسنجی پسورد، رکورد نشست در جدول <code dir="ltr">refresh_token_sessions</code> درج و توکن هش شده (SHA-256) ذخیره می‌شود. توکن خام منحصراً در کوکی قرار می‌گیرد.</li>
+            <li>در چرخش توکن (<code dir="ltr">POST /api/v1/auth/refresh</code>)، هدر <code dir="ltr">X-Refresh-Operation-Id</code> چک می‌شود تا در صورت قطعی اینترنت و ارسال مجدد همان شناسه در بازه ۶۰ ثانیه، نسخه انکریپت‌شده با AES-256-GCM بازگردانی شده و نشست باطل نگردد.</li>
+          </ol>
+          <p><strong>نقاط انتهایی و دسترسی:</strong> <code dir="ltr">POST /api/v1/auth/register</code>, <code dir="ltr">POST /api/v1/auth/token</code>, <code dir="ltr">POST /api/v1/auth/refresh</code>, <code dir="ltr">POST /api/v1/auth/logout</code>, <code dir="ltr">GET /api/v1/auth/me</code> (دسترسی عمومی برای ورود/ثبت‌نام، کاربری معتبر برای سایرین).</p>
+          <p><strong>روش تست:</strong> اجرای تست جامع <code dir="ltr">pytest tests/integration/test_auth_lifecycle.py</code> و <code dir="ltr">pytest tests/integration/test_refresh_concurrency.py</code>.</p>
+        </div>
+
+        <!-- Feature 2 -->
+        <div class="feature-card">
+          <div class="feature-card-header">
+            <h4>۲. فضاهای کاری چندمستأجره و اعضا (Organizations &amp; Workspace Tenancy)</h4>
+            <span class="badge badge-success">پیاده‌سازی و اعتبارسنجی‌شده</span>
+          </div>
+          <p><strong>شرح کارکرد:</strong> ایزوله کردن کامل داده‌های هر شرکت یا تیم کاری در مرز جدول <code dir="ltr">organizations</code> و انتساب کاربر سازنده به عنوان مالک (<code dir="ltr">OWNER</code>).</p>
+          <p><strong>فایل‌های مجری:</strong> <code dir="ltr">backend/app/modules/organizations/service.py</code>, <code dir="ltr">router.py</code>, <code dir="ltr">models.py</code>, <code dir="ltr">frontend/src/pages/OrganizationSelectPage.tsx</code></p>
+          <p><strong>مراحل عملکرد گام‌به‌گام:</strong></p>
+          <ol>
+            <li>کاربر با ارسال نام و اسلاگ به <code dir="ltr">POST /api/v1/organizations</code> سازمان ایجاد می‌کند.</li>
+            <li>سیستم سازمان را ایجاد کرده و رکورد <code dir="ltr">OrganizationMember</code> با نقش <code dir="ltr">OWNER</code> ثبت می‌کند.</li>
+            <li>تمام کوئری‌های بعدی کلاینت با هدر یا پارامتر <code dir="ltr">organization_id</code> کنترل می‌شوند. کاربر نامعتبر کد 404 دریافت می‌کند (Tenant Concealment).</li>
+          </ol>
+          <p><strong>روش تست:</strong> اجرای <code dir="ltr">pytest tests/integration/test_tenant_initialization.py</code> و <code dir="ltr">pytest tests/integration/test_tenant_isolation.py</code>.</p>
+        </div>
+
+        <!-- Feature 3 -->
+        <div class="feature-card">
+          <div class="feature-card-header">
+            <h4>۳. دعوت‌نامه‌ها و کنترل دسترسی سازمانی (Invitations &amp; RBAC)</h4>
+            <span class="badge badge-success">پیاده‌سازی و اعتبارسنجی‌شده</span>
+          </div>
+          <p><strong>شرح کارکرد:</strong> ارسال دعوت‌نامه توسط مدیر یا مالک با نقش معین، هش کردن توکن با SHA-256، انقضای ۷ روزه و پذیرش دعوت‌نامه توسط کاربر هم‌نام با ایمیل دعوت‌شده.</p>
+          <p><strong>فایل‌های مجری:</strong> <code dir="ltr">backend/app/modules/organizations/service.py</code>, <code dir="ltr">frontend/src/features/organizations/components/InviteMemberModal.tsx</code>, <code dir="ltr">MemberList.tsx</code></p>
+          <p><strong>قوانین حذف و تغییر نقش:</strong> ادمین نمی‌تواند ادمین دیگری یا مالک را حذف کند. با حذف عضو از سازمان، تمام تسک‌های محول‌شده به او در پروژه‌های آن سازمان در همان تراکنش بدون مسئول (Unassigned) می‌شوند.</p>
+          <p><strong>روش تست:</strong> <code dir="ltr">pytest tests/integration/test_invitations.py</code> و <code dir="ltr">pytest tests/integration/test_member_removal.py</code>.</p>
+        </div>
+
+        <!-- Feature 4 -->
+        <div class="feature-card">
+          <div class="feature-card-header">
+            <h4>۴. مدیریت پروژه‌ها و سطوح رویت‌پذیری (Projects &amp; Visibility Controls)</h4>
+            <span class="badge badge-success">پیاده‌سازی و اعتبارسنجی‌شده</span>
+          </div>
+          <p><strong>شرح کارکرد:</strong> دسته‌بندی پروژه‌ها بر اساس شناسه سازمان، کلید کوتاه پروژه (مانند <code dir="ltr">CORE</code>) و دو سطح دسترسی: <code dir="ltr">ORG_PUBLIC</code> (قابل مشاهده توسط تمام اعضای سازمان) و <code dir="ltr">RESTRICTED</code> (مشاهده صرفاً توسط مالکان/مدیران سازمان و اعضایی که مشخصاً به عنوان عضو پروژه افزوده شده‌اند).</p>
+          <p><strong>فایل‌های مجری:</strong> <code dir="ltr">backend/app/modules/projects/service.py</code>, <code dir="ltr">router.py</code>, <code dir="ltr">frontend/src/pages/ProjectsPage.tsx</code>, <code dir="ltr">ProjectSettingsPage.tsx</code></p>
+          <p><strong>روش تست:</strong> تست‌های یکپارچگی دسترسی در <code dir="ltr">backend/tests/integration/test_tenant_isolation.py</code>.</p>
+        </div>
+
+        <!-- Feature 5 -->
+        <div class="feature-card">
+          <div class="feature-card-header">
+            <h4>۵. موتور تابلوی کانبان و رتبه‌بندی LexoRank</h4>
+            <span class="badge badge-success">پیاده‌سازی و اعتبارسنجی‌شده</span>
+          </div>
+          <p><strong>شرح کارکرد:</strong> رندر سلسله‌مراتبی کامل تابلو، ستون‌ها و تسک‌ها با بارگذاری مشتاقانه (<code dir="ltr">selectinload</code>)، ایجاد خودکار تابلوی پیش‌فرض با ستون‌های <code dir="ltr">"To Do"</code>, <code dir="ltr">"In Progress"</code>, <code dir="ltr">"Done"</code> در صورت نبود تابلو، و مرتب‌سازی قطعی با کلیدهای رتبه‌بندی کسری رشته‌ای (LexoRank).</p>
+          <p><strong>فایل‌های مجری:</strong> <code dir="ltr">backend/app/modules/kanban/lexorank.py</code>, <code dir="ltr">service.py</code>, <code dir="ltr">router.py</code>, <code dir="ltr">frontend/src/features/kanban/</code></p>
+          <p><strong>فرمول رتبه‌بندی:</strong> فرمت کلیدها به صورت <code dir="ltr">{bucket}|{rank}</code> در مبنای ۳۶ کاراکتری (<code dir="ltr">0-9a-z</code>) است. درج بین دو رتبه مجاور بدون تغییر ردیف‌های دیگر با پیدا کردن نقطه میانی رشته در مقایسه لغوی پایگاه داده (Collate "C") انجام می‌گیرد.</p>
+          <p><strong>روش تست:</strong> آزمون‌های ریاضی و رفتاری در <code dir="ltr">pytest tests/unit/test_lexorank.py</code> و <code dir="ltr">pytest tests/integration/test_kanban_tree.py</code>.</p>
+        </div>
+
+        <!-- Feature 6 -->
+        <div class="feature-card">
+          <div class="feature-card-header">
+            <h4>۶. جابه‌جایی تسک‌ها با کنترل هم‌روندی خوش‌بینانه (OCC) و قفل ردیفی</h4>
+            <span class="badge badge-success">پیاده‌سازی و اعتبارسنجی‌شده</span>
+          </div>
+          <p><strong>شرح کارکرد:</strong> متد <code dir="ltr">POST /api/v1/tasks/{task_id}/move</code> جابه‌جایی عمودی و افقی تسک‌ها را مدیریت می‌کند. برای تضمین جامعیت در محیط‌های هم‌روند بالا:</p>
+          <ol>
+            <li>ستون والد تسک با دستور <code dir="ltr">SELECT ... FOR UPDATE</code> قفل می‌شود تا عملیات هم‌زمان دچار تداخل رتبه‌بندی نشود.</li>
+            <li>فیلد <code dir="ltr">version</code> تسک با <code dir="ltr">expected_version</code> ارسالی کلاینت مقایسه می‌شود. اگر کاربری دیگر هم‌زمان تسک را تغییر داده باشد، خطای <code dir="ltr">409 Conflict (TASK_VERSION_CONFLICT)</code> صادر می‌گردد.</li>
+            <li>فرانت‌اند تغییرات را به صورت خودکار Rollback کرده و کش تابلوی معتبر را بازخوانی می‌نماید.</li>
+          </ol>
+          <p><strong>روش تست:</strong> <code dir="ltr">pytest tests/integration/test_kanban_movement.py</code>.</p>
+        </div>
+
+        <!-- Feature 7 -->
+        <div class="feature-card">
+          <div class="feature-card-header">
+            <h4>۷. گفتگو و کامنت‌گذاری پیرامون وظایف (Task Comments)</h4>
+            <span class="badge badge-success">پیاده‌سازی و اعتبارسنجی‌شده</span>
+          </div>
+          <p><strong>شرح کارکرد:</strong> درج، ویرایش و حذف نرم کامنت‌های مربوط به هر تسک به صورت رشته مکالمات زمانی. ویرایش محتوا منحصراً در اختیار نویسنده است، اما حذف کامنت توسط نویسنده یا مدیر سازمان مجاز است.</p>
+          <p><strong>فایل‌های مجری:</strong> <code dir="ltr">backend/app/modules/comments/</code>, <code dir="ltr">frontend/src/features/kanban/components/TaskComments.tsx</code></p>
+          <p><strong>روش تست:</strong> <code dir="ltr">pytest tests/integration/test_comments.py</code>.</p>
+        </div>
+
+        <!-- Feature 8 -->
+        <div class="feature-card">
+          <div class="feature-card-header">
+            <h4>۸. سیستم اعلان‌های کاربری (In-App Notifications)</h4>
+            <span class="badge badge-success">پیاده‌سازی و اعتبارسنجی‌شده</span>
+          </div>
+          <p><strong>شرح کارکرد:</strong> صدور اعلان خودکار بر اساس رویدادهای سیستم (مانند انتساب وظیفه به کاربر <code dir="ltr">TASK_ASSIGNED</code> و تکمیل وظیفه <code dir="ltr">TASK_COMPLETED</code>). نمایش زنگوله اعلان با شمارنده پیام‌های خوانده‌نشده و متد علامت‌گذاری یکجا خوانده‌شده (<code dir="ltr">/notifications/mark-all-read</code>).</p>
+          <p><strong>فایل‌های مجری:</strong> <code dir="ltr">backend/app/modules/notifications/</code>, <code dir="ltr">frontend/src/features/notifications/components/NotificationInbox.tsx</code></p>
+          <p><strong>روش تست:</strong> <code dir="ltr">pytest tests/integration/test_notifications.py</code>.</p>
+        </div>
+
+        <!-- Feature 9 -->
+        <div class="feature-card">
+          <div class="feature-card-header">
+            <h4>۹. دفترکل تغییرناپذیر ممیزی رویدادها (Immutable Audit Logs)</h4>
+            <span class="badge badge-success">پیاده‌سازی و اعتبارسنجی‌شده</span>
+          </div>
+          <p><strong>شرح کارکرد:</strong> ثبت لاگ رویدادهای حساس مدیریتی (انتقال مالکیت، دعوت اعضا، ارتقا یا تنزل نقش، خروج عضو، ایجاد یا حذف پروژه) در جدول الصاقی <code dir="ltr">audit_logs</code> همراه با شناسه مجری، آدرس IP، امضای مرورگر و محموله JSON تغییرات.</p>
+          <p><strong>فایل‌های مجری:</strong> <code dir="ltr">backend/app/modules/audit_logs/</code>, <code dir="ltr">frontend/src/pages/AuditLogsPage.tsx</code></p>
+          <p><strong>روش تست:</strong> <code dir="ltr">pytest tests/integration/test_audit_logs.py</code>.</p>
+        </div>
+      </section>
+
+      <!-- SECTION 7 -->
+      <section id="sec-7">
+        <h2><span class="section-num">۷</span> معماری عمیق احراز هویت و چرخه توکن‌ها</h2>
+        <p>مکانیزم احراز هویت TaskFlow برای دستیابی به بالاترین استانداردهای امنیتی بدون استفاده از ذخیره‌سازی ناامن مرورگر طراحی شده است:</p>
+
+        <div class="diagram-container">
+          <svg viewBox="0 0 850 320" width="850" height="320" xmlns="http://www.w3.org/2000/svg">
+            <rect x="10" y="10" width="830" height="300" rx="12" fill="#ffffff" stroke="#cbd5e1" stroke-width="2"/>
+            <text x="425" y="38" text-anchor="middle" font-family="sans-serif" font-size="15" font-weight="bold" fill="#1e293b">جریان احراز هویت و چرخش توکن (Idempotent Token Rotation Protocol)</text>
+
+            <!-- Steps -->
+            <!-- Step 1 Login -->
+            <rect x="30" y="60" width="240" height="100" rx="8" fill="#eef2ff" stroke="#6366f1" stroke-width="1.5"/>
+            <text x="150" y="85" text-anchor="middle" font-family="sans-serif" font-size="13" font-weight="bold" fill="#312e81">۱. ورود به سیستم (/auth/token)</text>
+            <text x="150" y="110" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#4338ca">بررسی پسورد با Argon2id</text>
+            <text x="150" y="130" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#4338ca">صدور AccessToken (15m, JSON Body)</text>
+            <text x="150" y="150" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#4338ca">صدور RefreshToken (30d, HttpOnly Cookie)</text>
+
+            <!-- Step 2 Storage -->
+            <rect x="310" y="60" width="230" height="100" rx="8" fill="#f0fdf4" stroke="#22c55e" stroke-width="1.5"/>
+            <text x="425" y="85" text-anchor="middle" font-family="sans-serif" font-size="13" font-weight="bold" fill="#14532d">۲. وضعیت ذخیره‌سازی در کلاینت</text>
+            <text x="425" y="110" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#166534">AccessToken: صرفاً حافظه رم (Zustand)</text>
+            <text x="425" y="130" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#166534">عدم ذخیره در localStorage/sessionStorage</text>
+            <text x="425" y="150" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#166534">محافظت قطعی در برابر XSS</text>
+
+            <!-- Step 3 Expiry & Interceptor -->
+            <rect x="580" y="60" width="240" height="100" rx="8" fill="#fffbeb" stroke="#f59e0b" stroke-width="1.5"/>
+            <text x="700" y="85" text-anchor="middle" font-family="sans-serif" font-size="13" font-weight="bold" fill="#78350f">۳. انقضا و اینترسپتور 401</text>
+            <text x="700" y="110" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#92400e">دریافت 401 از اندپوینت‌های عادی</text>
+            <text x="700" y="130" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#92400e">فعال‌سازی قفل Web Locks در تب‌ها</text>
+            <text x="700" y="150" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#92400e">ارسال Operation ID برای بازنشانی</text>
+
+            <!-- Step 4 Rotation & Revocation -->
+            <rect x="150" y="190" width="550" height="105" rx="8" fill="#f8fafc" stroke="#64748b" stroke-width="1.5"/>
+            <text x="425" y="215" text-anchor="middle" font-family="sans-serif" font-size="13" font-weight="bold" fill="#0f172a">۴. چرخش توکن و ابطال کل خانواده نشست (Family Revocation)</text>
+            <text x="425" y="240" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#334155">• در سرور: توکن قبلی باطل شده و اشاره‌گر replaced_by_id ثبت می‌شود.</text>
+            <text x="425" y="260" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#334155">• در صورت تشخیص استفاده مجدد از توکن قبلی (سرقت توکن): تمام نشست‌های آن خانواده (Family) فوراً لغو می‌گردند.</text>
+            <text x="425" y="280" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#334155">• در قطعی شبکه: با همان Operation ID توکن انکریپت‌شده با AES-256-GCM بازگردانی می‌شود.</text>
+          </svg>
+        </div>
+
+        <h3>جزئیات امنیتی پیاده‌سازی شده در کد</h3>
+        <ul>
+          <li><strong>الگوریتم هش Argon2id:</strong> در فایل <code dir="ltr">backend/app/core/security.py</code> با مشخصات <code dir="ltr">time_cost=3, memory_cost=65536 (64 MiB), parallelism=4</code> اجرا می‌شود تا حملات کرک GPU و ASIC ناممکن گردد.</li>
+          <li><strong>انکریپشن ریکاوری AES-256-GCM:</strong> توکن جایگزین در بازه ریکاوری با کلید <code dir="ltr">REFRESH_RECOVERY_KEY</code> به همراه Nonce دوازده بایتی رمزشده و برچسب احراز اصالت داده (Auth Tag) نگهداری می‌شود.</li>
+          <li><strong>اصل سرکوب کلی کوکی در خطا (Universal Suppression Invariant):</strong> در صورت بروز هرگونه خطای موقت در سرور، سرور هرگز هدر <code dir="ltr">Set-Cookie: Max-Age=0</code> ارسال نمی‌کند تا کوکی معتبر کاربر در قطعی‌های گذرا از بین نرود.</li>
+        </ul>
+      </section>
+
+      <!-- SECTION 8 -->
+      <section id="sec-8">
+        <h2><span class="section-num">۸</span> سطوح دسترسی سازمانی و ایزولاسیون مستأجر (RBAC)</h2>
+        <p>سطوح دسترسی در فایل <code dir="ltr">backend/app/core/dependencies.py</code> با ساختار سلسله‌مراتبی عددی تعریف شده‌اند:</p>
+        <pre dir="ltr"><code>ROLE_HIERARCHY: dict[str, int] = {
+    "OWNER": 4,
+    "ADMIN": 3,
+    "MEMBER": 2,
+    "VIEWER": 1,
+}</code></pre>
+
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>نقش سازمانی</th>
+                <th>سطح</th>
+                <th>مجوزهای اصلی در فضای کاری</th>
+                <th>محدودیت‌ها</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>OWNER</strong></td>
+                <td>۴</td>
+                <td>کنترل تام فضای کاری، انتقال قطعی مالکیت، حذف سازمان، عزل مدیران، بازرسی لاگ‌ها</td>
+                <td>سازمان باید همیشه دقیقاً یک OWNER داشته باشد</td>
+              </tr>
+              <tr>
+                <td><strong>ADMIN</strong></td>
+                <td>۳</td>
+                <td>ایجاد پروژه، دعوت اعضا، ویرایش نقش اعضای عادی و بیننده، بازرسی لاگ‌های امنیتی</td>
+                <td>نمی‌تواند کاربری را به OWNER ارتقا دهد یا ادمین دیگری را عزل کند</td>
+              </tr>
+              <tr>
+                <td><strong>MEMBER</strong></td>
+                <td>۲</td>
+                <td>مشاهده پروژه‌های عمومی، ایجاد و جابه‌جایی تسک‌ها، ثبت نظر، مدیریت وضعیت کارها</td>
+                <td>دسترسی به لاگ‌های ممیزی، تغییر تنظیمات یا مدیریت اعضا ندارد</td>
+              </tr>
+              <tr>
+                <td><strong>VIEWER</strong></td>
+                <td>۱</td>
+                <td>صرفاً مشاهده پروژه‌ها، تابلوها و کامنت‌ها (حالت فقط-خواندنی Read-Only)</td>
+                <td>تمام درخواست‌های جهش داده (POST, PATCH, DELETE) با خطای 403 رد می‌شوند</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="callout callout-warning">
+          <strong>تضمین پنهان‌سازی مستأجر (Tenant Concealment Invariant):</strong>
+          در تمام توابع وابستگی فست‌ای‌پی‌آی (<code dir="ltr">require_org_role</code> و <code dir="ltr">require_project_access</code>)، هر درخواستی که توسط کاربری غیرعضو برای یک شناسه سازمان یا پروژه ارسال شود، مستقیماً با استثنای <code dir="ltr">NotFoundException (404)</code> پاسخ داده می‌شود؛ به این ترتیب مهاجمان حتی قادر به تشخیص وجود یا عدم وجود آن رکورد در سیستم نخواهند بود.
+        </div>
+      </section>
+
+      <!-- SECTION 9 -->
+      <section id="sec-9">
+        <h2><span class="section-num">۹</span> مدل داده، روابط جداول و مایگریشن‌های Alembic</h2>
+        <p>پایگاه داده TaskFlow بر روی PostgreSQL 18 قرار دارد و شامل <strong>۱۵ جدول</strong> عملیاتی است که توسط ۴ نسخه مایگریشن منظم Alembic مدیریت می‌شوند:</p>
+
+        <h3>فهرست مایگریشن‌ها در <code dir="ltr">backend/alembic/versions/</code></h3>
+        <ol>
+          <li><code dir="ltr">001_initial_auth_and_orgs.py</code>: ایجاد جداول <code dir="ltr">users</code>, <code dir="ltr">refresh_token_sessions</code>, <code dir="ltr">refresh_operations</code>, <code dir="ltr">organizations</code>, <code dir="ltr">organization_members</code>, <code dir="ltr">organization_invitations</code>.</li>
+          <li><code dir="ltr">002_kanban_tables.py</code>: ایجاد جداول <code dir="ltr">boards</code>, <code dir="ltr">lists</code>, <code dir="ltr">tasks</code> به همراه ایندکس‌های LexoRank و کنترل OCC.</li>
+          <li><code dir="ltr">003_projects_and_invitations.py</code>: ایجاد جداول <code dir="ltr">projects</code>, <code dir="ltr">project_members</code> به همراه فیلدهای رویت‌پذیری.</li>
+          <li><code dir="ltr">004_collaboration_tables.py</code>: ایجاد جداول <code dir="ltr">comments</code>, <code dir="ltr">notifications</code>, <code dir="ltr">audit_logs</code>.</li>
+        </ol>
+
+        <h3>موجودیت‌های اصلی و روابط داده‌ای</h3>
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>نام جدول</th>
+                <th>فیلد کلید اصلی</th>
+                <th>کلیدهای خارجی (Foreign Keys)</th>
+                <th>ایندکس‌ها و شروط یکتایی</th>
+                <th>توضیحات</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code dir="ltr">users</code></td>
+                <td><code dir="ltr">id (UUID)</code></td>
+                <td>-</td>
+                <td><code dir="ltr">uq_users_lower_email</code> (یکتا روی lower(email) برای تسک‌های فعال)</td>
+                <td>حساب‌های کاربری سیستم</td>
+              </tr>
+              <tr>
+                <td><code dir="ltr">organizations</code></td>
+                <td><code dir="ltr">id (UUID)</code></td>
+                <td>-</td>
+                <td><code dir="ltr">uq_organizations_slug_active</code> (یکتا روی slug برای سازمان‌های فعال)</td>
+                <td>مرز مستأجران و فضاهای کاری</td>
+              </tr>
+              <tr>
+                <td><code dir="ltr">organization_members</code></td>
+                <td><code dir="ltr">id (UUID)</code></td>
+                <td><code dir="ltr">organization_id, user_id</code></td>
+                <td><code dir="ltr">uq_org_member</code> (یکتایی زوج کاربر و سازمان)</td>
+                <td>انتساب کاربران به سازمان‌ها و نقش</td>
+              </tr>
+              <tr>
+                <td><code dir="ltr">projects</code></td>
+                <td><code dir="ltr">id (UUID)</code></td>
+                <td><code dir="ltr">organization_id, created_by_id</code></td>
+                <td><code dir="ltr">uq_project_key_org</code> (یکتایی کلید در سطح سازمان)</td>
+                <td>پروژه‌های کاری تیمی</td>
+              </tr>
+              <tr>
+                <td><code dir="ltr">boards</code></td>
+                <td><code dir="ltr">id (UUID)</code></td>
+                <td><code dir="ltr">project_id, organization_id, created_by_id</code></td>
+                <td>ایندکس روی <code dir="ltr">project_id</code></td>
+                <td>تابلوهای گردش کار کانبان</td>
+              </tr>
+              <tr>
+                <td><code dir="ltr">lists</code></td>
+                <td><code dir="ltr">id (UUID)</code></td>
+                <td><code dir="ltr">board_id, project_id, organization_id</code></td>
+                <td>ایندکس روی <code dir="ltr">ordering_key</code> و <code dir="ltr">board_id</code></td>
+                <td>ستون‌های وضعیت تابلو با کنترل نسخه version</td>
+              </tr>
+              <tr>
+                <td><code dir="ltr">tasks</code></td>
+                <td><code dir="ltr">id (UUID)</code></td>
+                <td><code dir="ltr">list_id, project_id, organization_id, assignee_id</code></td>
+                <td>ایندکس روی <code dir="ltr">list_id</code> و <code dir="ltr">ordering_key</code></td>
+                <td>وظایف کاری با نسخه OCC (<code dir="ltr">version INT</code>)</td>
+              </tr>
+              <tr>
+                <td><code dir="ltr">audit_logs</code></td>
+                <td><code dir="ltr">id (UUID)</code></td>
+                <td><code dir="ltr">organization_id, actor_id</code></td>
+                <td>ایندکس روی <code dir="ltr">created_at</code> و <code dir="ltr">organization_id</code></td>
+                <td>دفترکل الصاقی و غیرقابل ویرایش ممیزی</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- SECTION 10 -->
+      <section id="sec-10">
+        <h2><span class="section-num">۱۰</span> کاتالوگ جامع نقاط انتهایی API (Endpoints)</h2>
+        <p>تمام نقاط انتهایی نسخه اول API تحت پیشوند <code dir="ltr">/api/v1</code> ثبت شده‌اند (۴۲ نقطه انتهایی به علاوه روت سلامت):</p>
+
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>متد</th>
+                <th>مسیر نقطه انتهایی (Path)</th>
+                <th>عنوان و مسئولیت عملیاتی</th>
+                <th>سطح دسترسی مورد نیاز</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Auth -->
+              <tr><td><span class="badge badge-info">POST</span></td><td><code dir="ltr">/api/v1/auth/register</code></td><td>ثبت نام کاربر جدید با هش Argon2id</td><td>عمومی (با محدودیت Rate Limit)</td></tr>
+              <tr><td><span class="badge badge-info">POST</span></td><td><code dir="ltr">/api/v1/auth/token</code></td><td>ورود با OAuth2 فرم و صدور توکن دسترسی و کوکی ریفرش</td><td>عمومی (با محدودیت Rate Limit)</td></tr>
+              <tr><td><span class="badge badge-info">POST</span></td><td><code dir="ltr">/api/v1/auth/refresh</code></td><td>چرخش ایمن توکن با پروتکل Idempotent Recovery</td><td>دارنده کوکی ریفرش معتبر</td></tr>
+              <tr><td><span class="badge badge-info">POST</span></td><td><code dir="ltr">/api/v1/auth/logout</code></td><td>خروج و ابطال کل خانواده نشست ریفرش در دیتابیس</td><td>دارنده کوکی ریفرش</td></tr>
+              <tr><td><span class="badge badge-success">GET</span></td><td><code dir="ltr">/api/v1/auth/me</code></td><td>دریافت مشخصات پروفایل و لیست سازمان‌های کاربر جاری</td><td>کاربر فعال لاگین‌شده</td></tr>
+
+              <!-- Users -->
+              <tr><td><span class="badge badge-success">GET</span></td><td><code dir="ltr">/api/v1/users/me</code></td><td>مشاهده جزئیات پروفایل کاربری</td><td>کاربر فعال لاگین‌شده</td></tr>
+              <tr><td><span class="badge badge-warning">PATCH</span></td><td><code dir="ltr">/api/v1/users/me</code></td><td>به‌روزرسانی نام و آواتار کاربر جاری</td><td>کاربر فعال لاگین‌شده</td></tr>
+              <tr><td><span class="badge badge-danger">DELETE</span></td><td><code dir="ltr">/api/v1/users/me</code></td><td>حذف نرم حساب کاربری با رعایت قیود ارتباطی دیتابیس</td><td>کاربر فعال لاگین‌شده</td></tr>
+
+              <!-- Organizations -->
+              <tr><td><span class="badge badge-info">POST</span></td><td><code dir="ltr">/api/v1/organizations</code></td><td>ایجاد فضای کاری جدید و انتصاب سازنده به عنوان OWNER</td><td>کاربر فعال لاگین‌شده</td></tr>
+              <tr><td><span class="badge badge-success">GET</span></td><td><code dir="ltr">/api/v1/organizations</code></td><td>فهرست سازمان‌های عضویت کاربر جاری</td><td>کاربر فعال لاگین‌شده</td></tr>
+              <tr><td><span class="badge badge-info">POST</span></td><td><code dir="ltr">/api/v1/organizations/invitations/accept</code></td><td>پذیرش دعوت‌نامه با توکن SHA-256 و ورود به سازمان</td><td>کاربر فعال لاگین‌شده با ایمیل منطبق</td></tr>
+              <tr><td><span class="badge badge-success">GET</span></td><td><code dir="ltr">/api/v1/organizations/{org_id}/members</code></td><td>مشاهده اعضای سازمان به همراه نقش‌هایشان</td><td>عضو سازمان (حداقل VIEWER)</td></tr>
+              <tr><td><span class="badge badge-warning">PATCH</span></td><td><code dir="ltr">/api/v1/organizations/{org_id}/members/{user_id}</code></td><td>تغییر نقش عضو در سازمان</td><td>حداقل ADMIN سازمان</td></tr>
+              <tr><td><span class="badge badge-danger">DELETE</span></td><td><code dir="ltr">/api/v1/organizations/{org_id}/members/{user_id}</code></td><td>حذف عضو و برداشتن خودکار تسک‌های محول‌شده به او</td><td>حداقل ADMIN سازمان (فقط OWNER برای حذف ADMIN)</td></tr>
+              <tr><td><span class="badge badge-info">POST</span></td><td><code dir="ltr">/api/v1/organizations/{org_id}/transfer-ownership</code></td><td>انتقال قطعی مالکیت سازمان به یکی از اعضا</td><td>منحصراً OWNER فعلی سازمان</td></tr>
+              <tr><td><span class="badge badge-info">POST</span></td><td><code dir="ltr">/api/v1/organizations/{org_id}/invitations</code></td><td>ایجاد و ارسال دعوت‌نامه عضویت جدید</td><td>حداقل ADMIN سازمان</td></tr>
+              <tr><td><span class="badge badge-success">GET</span></td><td><code dir="ltr">/api/v1/organizations/{org_id}/invitations</code></td><td>مشاهده دعوت‌نامه‌های معلق منقضی‌نشده</td><td>حداقل ADMIN سازمان</td></tr>
+              <tr><td><span class="badge badge-danger">DELETE</span></td><td><code dir="ltr">/api/v1/organizations/{org_id}/invitations/{inv_id}</code></td><td>لغو دعوت‌نامه معلق</td><td>حداقل ADMIN سازمان</td></tr>
+
+              <!-- Projects -->
+              <tr><td><span class="badge badge-success">GET</span></td><td><code dir="ltr">/api/v1/organizations/{org_id}/projects</code></td><td>لیست پروژه‌های مجاز سازمان برای کاربر جاری</td><td>عضو سازمان (حداقل VIEWER)</td></tr>
+              <tr><td><span class="badge badge-info">POST</span></td><td><code dir="ltr">/api/v1/organizations/{org_id}/projects</code></td><td>ایجاد پروژه جدید در سازمان</td><td>حداقل ADMIN سازمان</td></tr>
+              <tr><td><span class="badge badge-success">GET</span></td><td><code dir="ltr">/api/v1/projects/{project_id}</code></td><td>دریافت جزئیات پروژه با بررسی رویت‌پذیری</td><td>مجاز در پروژه (حداقل VIEWER)</td></tr>
+              <tr><td><span class="badge badge-warning">PATCH</span></td><td><code dir="ltr">/api/v1/projects/{project_id}</code></td><td>ویرایش نام، توضیحات یا رویت‌پذیری پروژه</td><td>حداقل ADMIN پروژه یا سازمان</td></tr>
+              <tr><td><span class="badge badge-danger">DELETE</span></td><td><code dir="ltr">/api/v1/projects/{project_id}</code></td><td>حذف نرم پروژه و منابع زیرمجموعه</td><td>حداقل ADMIN پروژه یا سازمان</td></tr>
+              <tr><td><span class="badge badge-success">GET</span></td><td><code dir="ltr">/api/v1/projects/{project_id}/members</code></td><td>مشاهده اعضای پروژه اختصاصی</td><td>مجاز در پروژه</td></tr>
+              <tr><td><span class="badge badge-info">POST</span></td><td><code dir="ltr">/api/v1/projects/{project_id}/members</code></td><td>افزودن عضو به پروژه اختصاصی</td><td>حداقل ADMIN پروژه یا سازمان</td></tr>
+              <tr><td><span class="badge badge-danger">DELETE</span></td><td><code dir="ltr">/api/v1/projects/{project_id}/members/{user_id}</code></td><td>حذف عضو از پروژه اختصاصی</td><td>حداقل ADMIN پروژه یا سازمان</td></tr>
+
+              <!-- Kanban -->
+              <tr><td><span class="badge badge-success">GET</span></td><td><code dir="ltr">/api/v1/projects/{project_id}/boards</code></td><td>لیست تابلوهای پروژه با مقداردهی خودکار تابلوی پیش‌فرض</td><td>مجاز در پروژه (حداقل VIEWER)</td></tr>
+              <tr><td><span class="badge badge-info">POST</span></td><td><code dir="ltr">/api/v1/projects/{project_id}/boards</code></td><td>ایجاد تابلوی جدید برای پروژه</td><td>عضو پروژه با دسترسی ویرایش</td></tr>
+              <tr><td><span class="badge badge-success">GET</span></td><td><code dir="ltr">/api/v1/boards</code></td><td>فیلتر تابلوها با کوئری <code dir="ltr">?project=...</code></td><td>مجاز در پروژه مرتبط</td></tr>
+              <tr><td><span class="badge badge-success">GET</span></td><td><code dir="ltr">/api/v1/boards/{board_id}</code></td><td>بارگذاری سلسله‌مراتبی کامل تابلو، ستون‌ها و تسک‌ها</td><td>کاربر مجاز در پروژه تابلو</td></tr>
+              <tr><td><span class="badge badge-info">POST</span></td><td><code dir="ltr">/api/v1/boards/{board_id}/lists</code></td><td>ایجاد ستون گردش‌کار در تابلو با موقعیت LexoRank</td><td>عضو با دسترسی ویرایش</td></tr>
+              <tr><td><span class="badge badge-info">POST</span></td><td><code dir="ltr">/api/v1/lists/{list_id}/move</code></td><td>جابه‌جایی افقی ستون با بررسی نسخه OCC</td><td>عضو با دسترسی ویرایش</td></tr>
+              <tr><td><span class="badge badge-info">POST</span></td><td><code dir="ltr">/api/v1/lists/{list_id}/tasks</code></td><td>ایجاد تسک جدید درون ستون</td><td>عضو با دسترسی ویرایش</td></tr>
+              <tr><td><span class="badge badge-warning">PATCH</span></td><td><code dir="ltr">/api/v1/tasks/{task_id}</code></td><td>ویرایش مشخصات تسک (عنوان، اولویت، مسئول) با کنترل OCC</td><td>عضو با دسترسی ویرایش</td></tr>
+              <tr><td><span class="badge badge-info">POST</span></td><td><code dir="ltr">/api/v1/tasks/{task_id}/move</code></td><td>جابه‌جایی تسک با قفل ردیفی، کلید LexoRank و OCC</td><td>عضو با دسترسی ویرایش</td></tr>
+              <tr><td><span class="badge badge-danger">DELETE</span></td><td><code dir="ltr">/api/v1/tasks/{task_id}</code></td><td>حذف نرم وظیفه (تسک)</td><td>عضو با دسترسی ویرایش</td></tr>
+
+              <!-- Comments -->
+              <tr><td><span class="badge badge-success">GET</span></td><td><code dir="ltr">/api/v1/tasks/{task_id}/comments</code></td><td>لیست کامنت‌های تسک به ترتیب زمانی</td><td>عضو سازمان پروژه</td></tr>
+              <tr><td><span class="badge badge-info">POST</span></td><td><code dir="ltr">/api/v1/tasks/{task_id}/comments</code></td><td>ثبت کامنت جدید روی وظیفه</td><td>عضو سازمان پروژه</td></tr>
+              <tr><td><span class="badge badge-warning">PATCH</span></td><td><code dir="ltr">/api/v1/comments/{comment_id}</code></td><td>ویرایش متن کامنت</td><td>منحصراً نویسنده کامنت</td></tr>
+              <tr><td><span class="badge badge-danger">DELETE</span></td><td><code dir="ltr">/api/v1/comments/{comment_id}</code></td><td>حذف نرم کامنت</td><td>نویسنده یا مدیر سازمان</td></tr>
+
+              <!-- Notifications -->
+              <tr><td><span class="badge badge-success">GET</span></td><td><code dir="ltr">/api/v1/notifications</code></td><td>صندوق اعلان‌های کاربر جاری و تعداد خوانده‌نشده‌ها</td><td>کاربر فعال لاگین‌شده</td></tr>
+              <tr><td><span class="badge badge-warning">PATCH</span></td><td><code dir="ltr">/api/v1/notifications/{notif_id}/read</code></td><td>علامت‌گذاری اعلان به عنوان خوانده‌شده</td><td>مالک اعلان</td></tr>
+              <tr><td><span class="badge badge-info">POST</span></td><td><code dir="ltr">/api/v1/notifications/mark-all-read</code></td><td>علامت‌گذاری یک‌باره تمام اعلان‌ها به عنوان خوانده‌شده</td><td>کاربر فعال لاگین‌شده</td></tr>
+
+              <!-- Audit Logs -->
+              <tr><td><span class="badge badge-success">GET</span></td><td><code dir="ltr">/api/v1/organizations/{org_id}/audit-logs</code></td><td>مشاهده لاگ‌های ممیزی سازمان</td><td>حداقل ADMIN یا OWNER سازمان</td></tr>
+
+              <!-- Health Check -->
+              <tr><td><span class="badge badge-success">GET</span></td><td><code dir="ltr">/health</code></td><td>چک وضعیت سلامت وب‌سرور (پاسخ <code dir="ltr">{"status": "ok"}</code>)</td><td>عمومی (بدون نیاز به احراز هویت)</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- SECTION 11 -->
+      <section id="sec-11">
+        <h2><span class="section-num">۱۱</span> جریان‌های اجرایی انتها به انتها (End-to-End Flows)</h2>
+        <p>برای درک دقیق چگونگی تعامل اجزا، جریان چرخه عمر یک عملیات حیاتی جابه‌جایی کارت در تابلوی کانبان تشریح می‌شود:</p>
+
+        <ol>
+          <li><strong>تعامل کاربر در مرورگر:</strong> کاربر یک کارت تسک را در ستون <code dir="ltr">"To Do"</code> کشیده و در موقعیت دوم ستون <code dir="ltr">"In Progress"</code> رها می‌کند.</li>
+          <li><strong>واکنش فوری Optimistic UI در فرانت‌اند:</strong> کتابخانه <code dir="ltr">@hello-pangea/dnd</code> رویداد <code dir="ltr">onDragEnd</code> را فراخوانی می‌کند. تابع هوک <code dir="ltr">useKanbanBoard</code> فوراً کش TanStack Query را آپدیت می‌کند تا کاربر بدون کمترین تأخیر، کارت را در ستون مقصد مشاهده کند.</li>
+          <li><strong>ارسال جهش داده به API:</strong> درخواست <code dir="ltr">POST /api/v1/tasks/{id}/move</code> همراه با هدر <code dir="ltr">Authorization: Bearer &lt;token&gt;</code> و بدنه شامل <code dir="ltr">target_list_id</code>, <code dir="ltr">prev_task_id</code>, <code dir="ltr">next_task_id</code> و <code dir="ltr">expected_version: 1</code> به سمت انجین‌ایکس پورت ۵۱۷۳ ارسال می‌شود.</li>
+          <li><strong>عبور از Nginx Ingress:</strong> انجین‌ایکس مسیر <code dir="ltr">/api/</code> را به کانتینر بک‌اند <code dir="ltr">http://backend:8000/api/</code> پروکسی می‌کند و هدرهای واقعی کاربر را عبور می‌دهد.</li>
+          <li><strong>تأیید میدلورها و وابستگی‌ها در فست‌ای‌پی‌آی:</strong>
+            <ul>
+              <li>میدلور <code dir="ltr">CorrelationIdMiddleware</code> یک شناسه یکتا به درخواست تخصیص می‌دهد.</li>
+              <li>میدلور <code dir="ltr">TrustedOriginMiddleware</code> مقدار Origin را ارزیابی می‌کند.</li>
+              <li>وابستگی <code dir="ltr">get_current_active_user</code> امضای توکن JWT را به شکل بدون‌وضعیت (Stateless) در کسری از میلی‌ثانیه بررسی می‌کند.</li>
+            </ul>
+          </li>
+          <li><strong>تراکنش دیتابیس در <code dir="ltr">KanbanService.move_task</code>:</strong>
+            <ul>
+              <li>ستون مبدأ و مقصد با دستور <code dir="ltr">SELECT ... FOR UPDATE</code> قفل ردیفی می‌شوند.</li>
+              <li>بررسی نسخه همروندی انجام می‌شود: <code dir="ltr">task.version == payload.expected_version</code>. در صورت عدم تطابق، تراکنش Rollback شده و خطای ۴۰۹ برمی‌گردد.</li>
+              <li>الگوریتم <code dir="ltr">between_ranks</code> کلید رتبه‌بندی جدید LexoRank را بین تسک قبلی و بعدی محاسبه می‌کند.</li>
+              <li>فیلد نسخه تسک افزایش می‌یابد (<code dir="ltr">task.version += 1</code>) و تغییرات Commit می‌شود.</li>
+            </ul>
+          </li>
+          <li><strong>پاسخ به کلاینت و تثبیت وضعیت:</strong> تسک به‌روزشده با وضعیت ۲۰۰ بازگردانده می‌شود. کوئری‌های تابلوی کانبان در TanStack Query بازخوانی (Invalidate) می‌شوند تا اطمینان ۱۰۰٪ از هماهنگی با وضعیت دیتابیس حاصل گردد.</li>
+        </ol>
+      </section>
+
+      <!-- SECTION 12 -->
+      <section id="sec-12">
+        <h2><span class="section-num">۱۲</span> معماری کانتینری Docker و سرویس‌ها</h2>
+        <p>معماری استقرار TaskFlow در فایل <code dir="ltr">docker-compose.yml</code> به صورت ۵ سرویس کانتینری به هم پیوسته تعریف شده است:</p>
+
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>نام سرویس</th>
+                <th>تصویر یا کانتکست ساخت</th>
+                <th>پورت‌ها</th>
+                <th>وابستگی‌ها و شرایط سلامت</th>
+                <th>مسئولیت سرویس</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code dir="ltr">db</code></td>
+                <td><code dir="ltr">postgres:18-alpine</code></td>
+                <td><code dir="ltr">5432:5432</code></td>
+                <td>Healthcheck با دستور <code dir="ltr">pg_isready</code> هر ۵ ثانیه</td>
+                <td>پایگاه داده رابطه‌ای با ذخیره‌سازی مانا در حجم داکر <code dir="ltr">postgres_data_v18</code></td>
+              </tr>
+              <tr>
+                <td><code dir="ltr">migration</code></td>
+                <td>کانتکست <code dir="ltr">./backend</code></td>
+                <td>-</td>
+                <td>وابسته به سلامت سرویس <code dir="ltr">db</code> (<code dir="ltr">service_healthy</code>)</td>
+                <td>اجرای دستور <code dir="ltr">alembic upgrade head</code> و اعمال خودکار آخرین شمای دیتابیس در زمان استارت</td>
+              </tr>
+              <tr>
+                <td><code dir="ltr">backend</code></td>
+                <td>کانتکست <code dir="ltr">./backend</code></td>
+                <td><code dir="ltr">8000:8000</code></td>
+                <td>وابسته به سلامت <code dir="ltr">db</code> و اتمام موفق <code dir="ltr">migration</code> (<code dir="ltr">service_completed_successfully</code>)</td>
+                <td>اجرای سرور پروداکشن فست‌ای‌پی‌آی با Uvicorn و تست سلامت روی <code dir="ltr">/health</code></td>
+              </tr>
+              <tr>
+                <td><code dir="ltr">frontend</code></td>
+                <td>کانتکست <code dir="ltr">./frontend</code> (استیج runner)</td>
+                <td><code dir="ltr">5173:80</code></td>
+                <td>وابسته به سلامت <code dir="ltr">backend</code> (<code dir="ltr">service_healthy</code>)</td>
+                <td>وب‌سرور Nginx برای سرو فایل‌های استاتیک کامپایل‌شده SPA و پروکسی مسیر <code dir="ltr">/api/</code></td>
+              </tr>
+              <tr>
+                <td><code dir="ltr">locust</code></td>
+                <td>کانتکست <code dir="ltr">./backend</code></td>
+                <td><code dir="ltr">8089:8089</code></td>
+                <td>وابسته به سلامت سرویس <code dir="ltr">backend</code></td>
+                <td>محیط آزمون بار و ترافیک هم‌روند کاربران با دسترسی وب در پورت ۸۰۸۹</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- SECTION 13 -->
+      <section id="sec-13">
+        <h2><span class="section-num">۱۳</span> تنظیمات متغیرهای محیطی (Environment Configuration)</h2>
+        <p>تنظیمات برنامه از طریق متغیرهای محیطی یا فایل <code dir="ltr">.env</code> بارگذاری می‌شوند. مقادیر پیش‌فرض توسعه ایمن در کد قرار دارند اما در محیط عملیاتی باید بازنویسی شوند:</p>
+
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>نام متغیر محیطی</th>
+                <th>نوع و مقدار نمونه امن</th>
+                <th>هدف و کاربرد فنی در سیستم</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td><code dir="ltr">ENVIRONMENT</code></td><td><code dir="ltr">development</code> یا <code dir="ltr">production</code></td><td>تعیین فعال بودن مستندات خودکار Swagger/ReDoc و میزان لاگ‌ها</td></tr>
+              <tr><td><code dir="ltr">SECRET_KEY</code></td><td>رشته حداقل ۳۲ کاراکتری تصادفی</td><td>کلید خصوصی جهت امضا و اعتبارسنجی رمزنگاری توکن‌های JWT Access Token</td></tr>
+              <tr><td><code dir="ltr">REFRESH_RECOVERY_KEY</code></td><td>رشته ۳۲ بایتی تصادفی</td><td>کلید انکریپشن الگوریتم AES-256-GCM برای حفاظت از توکن‌های در حال ریکاوری</td></tr>
+              <tr><td><code dir="ltr">ACCESS_TOKEN_EXPIRE_MINUTES</code></td><td><code dir="ltr">15</code></td><td>مدت زمان حیات توکن دسترسی موقت در رم کلاینت</td></tr>
+              <tr><td><code dir="ltr">REFRESH_TOKEN_EXPIRE_DAYS</code></td><td><code dir="ltr">30</code></td><td>مدت زمان ماندگاری توکن نشست در کوکی مرورگر</td></tr>
+              <tr><td><code dir="ltr">POSTGRES_SERVER</code></td><td><code dir="ltr">db</code> (در داکر) یا <code dir="ltr">localhost</code></td><td>آدرس سرور پایگاه داده پستگرس</td></tr>
+              <tr><td><code dir="ltr">POSTGRES_PORT</code></td><td><code dir="ltr">5432</code></td><td>پورت ارتباطی پایگاه داده</td></tr>
+              <tr><td><code dir="ltr">POSTGRES_USER</code></td><td><code dir="ltr">taskflow</code></td><td>نام کاربر احراز هویت دیتابیس</td></tr>
+              <tr><td><code dir="ltr">POSTGRES_PASSWORD</code></td><td><code dir="ltr">change-me-secure-password</code></td><td>رمز عبور ارتباط با دیتابیس</td></tr>
+              <tr><td><code dir="ltr">POSTGRES_DB</code></td><td><code dir="ltr">taskflow</code></td><td>نام پایگاه داده پیش‌فرض</td></tr>
+              <tr><td><code dir="ltr">ALLOWED_ORIGINS</code></td><td><code dir="ltr">http://localhost:5173,http://127.0.0.1:5173</code></td><td>دامنه‌های مجاز CORS و بررسی هدر Origin برای امنیت CSRF</td></tr>
+              <tr><td><code dir="ltr">COOKIE_SECURE</code></td><td><code dir="ltr">false</code> (توسعه) / <code dir="ltr">true</code> (تولید با HTTPS)</td><td>ارسال کوکی فقط بر روی پروتکل امن HTTPS</td></tr>
+              <tr><td><code dir="ltr">SAME_SITE</code></td><td><code dir="ltr">lax</code></td><td>سیاست SameSite برای مقابله با جعل درخواست بین‌سایتی</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- SECTION 14 -->
+      <section id="sec-14">
+        <h2><span class="section-num">۱۴</span> سیستم تست خودکار و اعتبارسنجی کیفیت</h2>
+        <p>پروژه TaskFlow دارای پوشش تست کامل در لایه‌های مختلف است. تمام تست‌های واحد و یکپارچگی روی آخرین معماری اجرا شده و با موفقیت ۱۰۰٪ پاس شده‌اند:</p>
+
+        <h3>دستورات اجرای تست‌ها</h3>
+        <pre dir="ltr"><code># اجرای تست‌های بک‌اند درون کانتینر
+docker compose exec backend pytest -v
+
+# خروجی تأیید شده:
+# 59 passed, 8 warnings in 2.60s (100% SUCCESS)
+
+# بررسی کیفیت و تایپ‌استاتیک کد
+docker compose exec backend ruff check .
+docker compose exec backend mypy app
+
+# بیلد نهایی و تایپ‌چک فرانت‌اند
+cd frontend &amp;&amp; npm run build</code></pre>
+
+        <h3>دسته‌بندی فایل‌های تست تأییدشده</h3>
+        <ul>
+          <li><code dir="ltr">backend/tests/integration/test_auth_lifecycle.py</code>: تست کامل ثبت نام، ورود، دریافت توکن و خروج.</li>
+          <li><code dir="ltr">backend/tests/integration/test_refresh_concurrency.py</code>: تست چرخش هم‌روند توکن ریفرش و مکانیزم ریکاوری با بازه زمانی.</li>
+          <li><code dir="ltr">backend/tests/integration/test_tenant_isolation.py</code>: تست قطعی ممانعت از نشت داده میان سازمان‌های مختلف و صدور خطای 404.</li>
+          <li><code dir="ltr">backend/tests/integration/test_kanban_movement.py</code>: تست جابه‌جایی عمودی و افقی تسک‌ها، کنترل نسخه OCC و صدور تداخل 409.</li>
+          <li><code dir="ltr">backend/tests/integration/test_kanban_tree.py</code>: تست بارگذاری کامل درخت تابلو و مقداردهی خودکار تابلوی اولیه.</li>
+          <li><code dir="ltr">backend/tests/unit/test_lexorank.py</code>: تست الگوریتم ریاضی نقطه میانی رشته در مبنای ۳۶ و نبود صفر انتهایی.</li>
+          <li><code dir="ltr">backend/tests/unit/test_security.py</code>: تست صحت کارکرد هش‌های Argon2id و انکریپشن AES-256-GCM.</li>
+        </ul>
+      </section>
+
+      <!-- SECTION 15 -->
+      <section id="sec-15">
+        <h2><span class="section-num">۱۵</span> لاگینگ، اشکال‌زدایی و آزمون کارایی (Locust)</h2>
+        <p>نرم‌افزار مجهز به سیستم لاگینگ ساختاریافته در ماژول <code dir="ltr">backend/app/core/logging.py</code> است. هر درخواست از بدو ورود یک شناسه تصادفی <code dir="ltr">X-Correlation-Id</code> دریافت می‌کند که در هدر پاسخ نیز بازگردانده شده و در لاگ تمام لایه‌ها درج می‌گردد.</p>
+
+        <h3>آزمون بارگذاری با Locust (<code dir="ltr">loadtests/</code>)</h3>
+        <p>یک سناریوی کامل شبیه‌سازی کاربران هم‌روند در فایل <code dir="ltr">loadtests/locustfile.py</code> پیاده‌سازی شده است. این اسکریپت رفتارهای واقعی نظیر لاگین، پیمایش پروژه‌ها، دریافت تابلوی کانبان و جابه‌جایی مکرر تسک‌ها با ارسال کلیدهای رتبه‌بندی را تحت فشار بالا تست می‌کند. رابط وب Locust در پورت <strong>8089</strong> در دسترس است:</p>
+        <pre dir="ltr"><code># اجرای سرویس لوکاست
+docker compose up -d locust
+# مراجعه به http://localhost:8089 در مرورگر</code></pre>
+      </section>
+
+      <!-- SECTION 16 -->
+      <section id="sec-16">
+        <h2><span class="section-num">۱۶</span> معماری امنیت، نقاط قوت و ریسک‌ها</h2>
+
+        <div class="grid-2">
+          <div class="feature-card">
+            <div class="feature-card-header">
+              <h4>نقاط قوت امنیتی پیاده‌سازی شده</h4>
+            </div>
+            <ul>
+              <li><strong>عدم ذخیره توکن در دیسک کلاینت:</strong> با نگهداری توکن منحصراً در رم، احتمال سرقت از طریق آسیب‌پذیری‌های XSS در اسکریپت‌های ثالث به صفر می‌رسد.</li>
+              <li><strong>پنهان‌سازی چندمستأجره (Tenant Concealment):</strong> صدور پاسخ 404 به جای 403 هرگونه شناسایی دامنه‌های اطلاعاتی سازمان‌های دیگر را غیرممکن می‌کند.</li>
+              <li><strong>میدلور دفاع در برابر CSRF:</strong> هدر Origin در تمام متدهای دارای اثر جانبی چک می‌شود.</li>
+              <li><strong>کنترل نرخ درخواست (Rate Limiting):</strong> ماژول درون‌حافظه‌ای <code dir="ltr">InMemoryRateLimiter</code> از حملات جستجوی فراگیر روی مسیرهای لاگین جلوگیری می‌کند.</li>
+              <li><strong>ایمنی SQL Injection:</strong> استفاده محض از ORM و عبارات پارامتری SQLAlchemy Async بدون هیچ‌گونه Raw SQL در روترها.</li>
+            </ul>
+          </div>
+          <div class="feature-card">
+            <div class="feature-card-header">
+              <h4>ریسک‌های شناخته‌شده و توصیه‌ها</h4>
+            </div>
+            <ul>
+              <li><strong>محدودیت Rate Limiter در کلاسترهای توزیع‌شده:</strong> محدودکننده نرخ فعلی مبتنی بر حافظه همان پردازش (In-Memory) است. در صورت اسکیل افقی به چند سرور فست‌ای‌پی‌آی، باید با یک استور توزیع‌شده هماهنگ شود.</li>
+              <li><strong>نبود سرویس ارسال ایمیل واقعی:</strong> دعوت‌نامه‌ها در دیتابیس ثبت می‌شوند و توکن صادر می‌گردد، اما سرویس ارسال ایمیل خارجی (مانند SMTP یا Resend) متصل نیست؛ بنابراین توکن باید به صورت دستی یا از طریق API انتقال یابد.</li>
+              <li><strong>کلیدهای محیط توسعه:</strong> باید اطمینان حاصل شود که متغیرهای <code dir="ltr">SECRET_KEY</code> و <code dir="ltr">REFRESH_RECOVERY_KEY</code> پیش از ورود به محیط عملیاتی تغییر کنند.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 17 -->
+      <section id="sec-17">
+        <h2><span class="section-num">۱۷</span> قابلیت‌های مدیریتی (Administration Capabilities Audit)</h2>
+        <p>بر اساس ممیزی شواهد محور کد (که به تفصیل در سند <code dir="ltr">docs/ADMIN_AUDIT.md</code> مستند شده است):</p>
+
+        <div class="callout callout-warning">
+          <strong>نتیجه ممیزی مدیریت کلان:</strong>
+          سیستم TaskFlow دارای مدیریت قوی در <em>سطح سازمان</em> است، اما <strong>فاقد پنل مدیریت کلان (Global Superadmin)</strong> یا رابط‌های آماده نظیر SQLAdmin است.
+        </div>
+
+        <ul>
+          <li><strong>مدیریت سطح سازمان (موجود و تأییدشده):</strong> کاربران با نقش <code dir="ltr">OWNER</code> و <code dir="ltr">ADMIN</code> قادر به دعوت اعضا، ویرایش نقش‌ها، اخراج اعضا، انتقال مالکیت و بازرسی لاگ‌های ممیزی سازمان خود هستند.</li>
+          <li><strong>مدیریت درسطح کل سیستم (غیرفعال و فاقد روت):</strong> فیلد <code dir="ltr">is_superuser</code> در جدول <code dir="ltr">users</code> و مدل داده وجود دارد اما هیچ روت یا وابستگی در بک‌اند وجود ندارد که این فیلد را بررسی کرده یا امکان مشاهده کاربران در بین تمام سازمان‌ها را فراهم کند.</li>
+        </ul>
+      </section>
+
+      <!-- SECTION 18 -->
+      <section id="sec-18">
+        <h2><span class="section-num">۱۸</span> قابلیت‌های ناتمام، برنامه‌ریزی‌شده و محدودیت‌های فعلی</h2>
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>قابلیت یا ابزار</th>
+                <th>وضعیت فعلی</th>
+                <th>دلیل یا محدودیت فنی</th>
+                <th>راهکار و گام بعدی</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>تست مرورگر واقعی Playwright</td>
+                <td><span class="badge badge-warning">اسکریپت موجود / باینری فاقد دانلود</span></td>
+                <td>محدودیت دسترسی CDN در دانلود باینری‌های Chromium در محیط سیستم میزبان</td>
+                <td>تست‌ها با بیلد پروداکشن تایپ‌اسکریپت و آزمون‌های یکپارچگی API اعتبارسنجی شده‌اند</td>
+              </tr>
+              <tr>
+                <td>همگام‌سازی زنده با WebSockets</td>
+                <td><span class="badge badge-info">برنامه‌ریزی‌شده در نقشه راه</span></td>
+                <td>پرهیز از پیچیدگی زودرس در فاز MVP طبق اصول معماری CLAUDE.md</td>
+                <td>فعلاً هماهنگی کلاینت از طریق پولینگ هوشمند و اینولیدیشن TanStack Query انجام می‌شود</td>
+              </tr>
+              <tr>
+                <td>داشبورد ادمین کلان (Superadmin)</td>
+                <td><span class="badge badge-info">برنامه‌ریزی‌شده در نقشه راه</span></td>
+                <td>تمرکز فاز جاری بر ایزولاسیون کامل مستأجران چندگانه (Multi-Tenancy)</td>
+                <td>افزودن وابستگی <code dir="ltr">require_superuser</code> و راه‌اندازی روت‌های <code dir="ltr">/api/v1/admin/</code></td>
+              </tr>
+              <tr>
+                <td>ضمیمه کردن فایل به وظایف (File Attachments)</td>
+                <td><span class="badge badge-info">برنامه‌ریزی‌شده در نقشه راه</span></td>
+                <td>نیاز به راه‌اندازی استوریج S3 یا MinIO در زیرساخت</td>
+                <td>اضافه شدن در فازهای بعدی مدیریت دارایی‌ها</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- SECTION 19 -->
+      <section id="sec-19">
+        <h2><span class="section-num">۱۹</span> راهنمای گام‌به‌گام راه‌اندازی و استفاده در Docker</h2>
+        <p>راه‌اندازی کامل سیستم با داکر بدون نیاز به نصب هیچ‌گونه ابزار اضافی روی سیستم میزبان به سادگی انجام می‌پذیرد:</p>
+
+        <h3>مراحل استقرار سریع:</h3>
+        <pre dir="ltr"><code># ۱. کلون کردن مخزن
+git clone https://github.com/SevenofSwordsVII/TaskFlow.git
+cd TaskFlow
+
+# ۲. ساخت ایمیج‌ها و اجرای سرویس‌ها در پس‌زمینه
+docker compose up -d --build
+
+# ۳. بررسی وضعیت کانتینرها و اطمینان از سلامت (Healthy)
+docker compose ps
+
+# ۴. مشاهده لاگ‌های سرویس بک‌اند در صورت نیاز
+docker compose logs -f backend</code></pre>
+
+        <h3>آدرس‌های دسترسی در مرورگر:</h3>
+        <ul>
+          <li><strong>رابط کاربری نرم‌افزار (Frontend SPA):</strong> <a href="http://localhost:5173" target="_blank" dir="ltr">http://localhost:5173</a></li>
+          <li><strong>مستندات تعاملی API (Swagger UI):</strong> <a href="http://localhost:8000/docs" target="_blank" dir="ltr">http://localhost:8000/docs</a></li>
+          <li><strong>مستندات جایگزین API (ReDoc):</strong> <a href="http://localhost:8000/redoc" target="_blank" dir="ltr">http://localhost:8000/redoc</a></li>
+          <li><strong>اندپوینت بررسی سلامت سرور (Health Check):</strong> <a href="http://localhost:8000/health" target="_blank" dir="ltr">http://localhost:8000/health</a></li>
+          <li><strong>پنل آزمون بارگذاری لوکاست (Locust):</strong> <a href="http://localhost:8089" target="_blank" dir="ltr">http://localhost:8089</a></li>
+        </ul>
+      </section>
+
+      <!-- SECTION 20 -->
+      <section id="sec-20">
+        <h2><span class="section-num">۲۰</span> واژه‌نامه اصطلاحات تخصصی (Glossary)</h2>
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>اصطلاح تخصصی (انگلیسی)</th>
+                <th>معادل و مفهوم در فارسی</th>
+                <th>کاربرد مشخص در پروژه TaskFlow</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong dir="ltr">Modular Monolith</strong></td>
+                <td>معماری یکپارچه ماژولار</td>
+                <td>ساختار کد در قالب یک سرویس واحد با مرزهای ماژولار صریح و نامتقاطع به جای شکستن زودهنگام به میکروسرویس‌ها.</td>
+              </tr>
+              <tr>
+                <td><strong dir="ltr">Vertical Slice</strong></td>
+                <td>برش عمودی معماری</td>
+                <td>سازمان‌دهی کدها حول محور فیچرهای تجاری (مانند کانبان یا سازمان) که تمام لایه‌های دیتابیس تا کنترلر را شامل می‌شود.</td>
+              </tr>
+              <tr>
+                <td><strong dir="ltr">Multi-Tenancy</strong></td>
+                <td>چندمستأجری</td>
+                <td>میزبانی چندین سازمان مختلف روی یک پایگاه داده مشترک با حفظ ایزولاسیون کامل داده‌ها از طریق <code dir="ltr">organization_id</code>.</td>
+              </tr>
+              <tr>
+                <td><strong dir="ltr">Tenant Concealment</strong></td>
+                <td>پنهان‌سازی هویت مستأجر</td>
+                <td>تکنیک امنیتی بازگرداندن پاسخ 404 به جای 403 برای جلوگیری از کشف شناسه سازمان‌ها و پروژه‌های دیگران توسط مهاجم.</td>
+              </tr>
+              <tr>
+                <td><strong dir="ltr">LexoRank</strong></td>
+                <td>رتبه‌بندی لغوی کسری</td>
+                <td>سیستم تخصیص رشته‌های مبنای ۳۶ به موجودیت‌ها برای مرتب‌سازی سریع با امکان درج بین دو عنصر بدون تغییر سایر ردیف‌ها.</td>
+              </tr>
+              <tr>
+                <td><strong dir="ltr">Optimistic Concurrency Control (OCC)</strong></td>
+                <td>کنترل هم‌روندی خوش‌بینانه</td>
+                <td>اعتبارسنجی فیلد نسخه (<code dir="ltr">version</code>) در زمان ثبت تغییرات و صدور خطای ۴۰۹ در صورت وقوع جهش هم‌زمان توسط کاربر دیگر.</td>
+              </tr>
+              <tr>
+                <td><strong dir="ltr">Web Locks API</strong></td>
+                <td>رابط برنامه‌نویسی قفل‌های وب</td>
+                <td>قابلیت استاندارد مرورگر برای هماهنگی بین تب‌ها به طوری که چرخش ریفرش توکن هم‌زمان فقط توسط یک تب اجرا گردد.</td>
+              </tr>
+              <tr>
+                <td><strong dir="ltr">Token Family Revocation</strong></td>
+                <td>ابطال خانواده توکن</td>
+                <td>شناسایی سرقت توکن‌های ریفرش؛ چنانچه توکنی که قبلاً جایگزین شده مجدداً ارسال شود، کل زنجیره نشست باطل می‌گردد.</td>
+              </tr>
+              <tr>
+                <td><strong dir="ltr">Selectinload</strong></td>
+                <td>بارگذاری مشتاقانه انتخابی</td>
+                <td>استراتژی بهینه SQLAlchemy Async برای لود کردن فرزندان یک رابطه در کوئری دوم با دستور IN جهت حذف مسئله N+1.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+    </main>
+  </div>
+</div>
+
+</body>
+</html>

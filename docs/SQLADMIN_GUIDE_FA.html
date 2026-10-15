@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>راهنمای جامع پنل مدیریت کلان SQLAdmin در TaskFlow</title>
+  <style>
+    :root {
+      --primary: #4338ca;
+      --primary-dark: #312e81;
+      --primary-light: #e0e7ff;
+      --secondary: #0284c7;
+      --success: #15803d;
+      --warning: #b45309;
+      --danger: #b91c1c;
+      --bg: #f8fafc;
+      --surface: #ffffff;
+      --surface-alt: #f1f5f9;
+      --text: #0f172a;
+      --text-muted: #475569;
+      --border: #cbd5e1;
+      --code-bg: #0f172a;
+      --code-text: #f1f5f9;
+      --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+      --radius: 10px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      direction: rtl;
+      text-align: right;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Vazirmatn, Tahoma, Arial, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.8;
+      font-size: 15px;
+    }
+
+    .container {
+      max-width: 1300px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+
+    header.hero {
+      background: linear-gradient(135deg, #1e1b4b 0%, #312e81 60%, #4338ca 100%);
+      color: #ffffff;
+      padding: 40px 32px;
+      border-radius: var(--radius);
+      margin-bottom: 32px;
+      box-shadow: var(--shadow);
+    }
+
+    header.hero h1 {
+      font-size: 2.1rem;
+      margin-bottom: 12px;
+    }
+
+    header.hero p {
+      font-size: 1.05rem;
+      color: #c7d2fe;
+      max-width: 900px;
+    }
+
+    .meta-badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 12px;
+      border-radius: 9999px;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
+    .badge-primary { background: rgba(255, 255, 255, 0.2); color: #ffffff; }
+    .badge-success { background: #dcfce7; color: #166534; }
+    .badge-warning { background: #fef3c7; color: #92400e; }
+    .badge-danger { background: #fee2e2; color: #991b1b; }
+
+    .layout-grid {
+      display: grid;
+      grid-template-columns: 300px 1fr;
+      gap: 32px;
+      align-items: start;
+    }
+
+    @media (max-width: 1024px) {
+      .layout-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .sidebar-toc {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      position: sticky;
+      top: 24px;
+      max-height: calc(100vh - 48px);
+      overflow-y: auto;
+      box-shadow: var(--shadow);
+    }
+
+    .sidebar-toc h3 {
+      font-size: 1.05rem;
+      margin-bottom: 14px;
+      padding-bottom: 8px;
+      border-bottom: 2px solid var(--primary-light);
+      color: var(--primary-dark);
+    }
+
+    .sidebar-toc ol {
+      list-style-position: inside;
+      font-size: 0.9rem;
+    }
+
+    .sidebar-toc li {
+      margin-bottom: 8px;
+    }
+
+    .sidebar-toc a {
+      color: var(--text-muted);
+      text-decoration: none;
+    }
+
+    .sidebar-toc a:hover {
+      color: var(--primary);
+      font-weight: 600;
+    }
+
+    main.content {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 36px;
+      box-shadow: var(--shadow);
+    }
+
+    section {
+      margin-bottom: 48px;
+      scroll-margin-top: 32px;
+    }
+
+    h2 {
+      font-size: 1.5rem;
+      color: var(--text);
+      margin-bottom: 16px;
+      padding-bottom: 8px;
+      border-bottom: 2px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    h2 .num {
+      background: var(--primary-light);
+      color: var(--primary);
+      width: 32px;
+      height: 32px;
+      border-radius: 6px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.95rem;
+      font-weight: 700;
+    }
+
+    h3 {
+      font-size: 1.2rem;
+      color: var(--primary-dark);
+      margin: 24px 0 12px;
+    }
+
+    p {
+      margin-bottom: 14px;
+      text-align: justify;
+    }
+
+    ul, ol {
+      margin-bottom: 14px;
+      padding-right: 20px;
+    }
+
+    li {
+      margin-bottom: 6px;
+    }
+
+    code, pre, .ltr, [dir="ltr"] {
+      direction: ltr !important;
+      text-align: left !important;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    }
+
+    code {
+      background-color: var(--surface-alt);
+      color: #991b1b;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.9em;
+      border: 1px solid var(--border);
+    }
+
+    pre {
+      background-color: var(--code-bg);
+      color: var(--code-text);
+      padding: 16px;
+      border-radius: 8px;
+      overflow-x: auto;
+      margin: 14px 0;
+      font-size: 0.88rem;
+      line-height: 1.5;
+    }
+
+    pre code {
+      background: transparent;
+      color: inherit;
+      padding: 0;
+      border: none;
+    }
+
+    .table-container {
+      overflow-x: auto;
+      margin: 18px 0;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: right;
+      font-size: 0.88rem;
+    }
+
+    th {
+      background-color: var(--surface-alt);
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--border);
+      font-weight: 700;
+    }
+
+    td {
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+    }
+
+    tr:nth-child(even) td {
+      background-color: #fafbfc;
+    }
+
+    .callout {
+      padding: 16px;
+      border-radius: 8px;
+      margin: 18px 0;
+      border-right: 4px solid;
+    }
+
+    .callout-info {
+      background-color: #eff6ff;
+      border-right-color: var(--primary);
+      color: #1e3a8a;
+    }
+
+    .callout-warning {
+      background-color: #fffbeb;
+      border-right-color: var(--warning);
+      color: #78350f;
+    }
+
+    .callout-danger {
+      background-color: #fef2f2;
+      border-right-color: var(--danger);
+      color: #7f1d1d;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+
+  <header class="hero">
+    <h1>مستندات معماری و راهنمای ادغام پنل مدیریت کلان SQLAdmin در TaskFlow</h1>
+    <p>راهنمای مهندسی نصب، پیکربندی امنیتی، مجوزدهی سرور، تعاریف نماهای مدل، و دستورات ارتقای کاربر به مدیر ارشد سیستم با فریم‌ورک SQLAdmin و دیتابیس ناهمگام SQLAlchemy Async.</p>
+    <div class="meta-badges">
+      <span class="badge badge-primary">نسخه SQLAdmin: 0.32.0</span>
+      <span class="badge badge-primary">مسیر دسترسی: /admin</span>
+      <span class="badge badge-success">موتور دیتابیس: SQLAlchemy AsyncEngine</span>
+      <span class="badge badge-warning">احراز هویت: Session + HttpOnly Cookie</span>
+      <span class="badge badge-danger">مجوز لازم: is_superuser=True</span>
+    </div>
+  </header>
+
+  <div class="layout-grid">
+
+    <aside class="sidebar-toc">
+      <h3>فهرست مطالب</h3>
+      <ol>
+        <li><a href="#sec-1">معرفی و دلایل انتخاب SQLAdmin</a></li>
+        <li><a href="#sec-2">معماری یکپارچه‌سازی با FastAPI و دیتابیس ناهمگام</a></li>
+        <li><a href="#sec-3">احراز هویت و مجوزدهی مدیر کلان (AuthenticationBackend)</a></li>
+        <li><a href="#sec-4">دستورات CLI ایجاد و ارتقای سوپریوزر</a></li>
+        <li><a href="#sec-5">پیکربندی متغیرهای محیطی و امنیت کوکی‌ها</a></li>
+        <li><a href="#sec-6">کاتالوگ نماهای مدل (ModelViews) و سیاست‌های CRUD</a></li>
+        <li><a href="#sec-7">حفاظت از داده‌های حساس و عدم افشای پسوردها</a></li>
+        <li><a href="#sec-8">تغییرناپذیری لاگ‌های ممیزی و حفاظت از کانبان</a></li>
+        <li><a href="#sec-9">پیکربندی داکر و دسترسی از پورت‌های ۵۱۷۳ و ۸۰۰۰</a></li>
+        <li><a href="#sec-10">آزمون‌های خودکار امنیتی و نتایج تست‌ها</a></li>
+        <li><a href="#sec-11">راهنمای رفع اشکال (Troubleshooting)</a></li>
+        <li><a href="#sec-12">ملاحظات محیط پروداکشن و گام‌های آتی</a></li>
+      </ol>
+    </aside>
+
+    <main class="content">
+
+      <!-- SECTION 1 -->
+      <section id="sec-1">
+        <h2><span class="num">۱</span> معرفی و دلایل انتخاب SQLAdmin</h2>
+        <p><strong>SQLAdmin</strong> یک داشبورد مدیریتی مدرن، سبک و با کارایی بالا برای اپلیکیشن‌های مبتنی بر FastAPI و Starlette است که به طور ذاتی با SQLAlchemy (از جمله نسخه 2.x و موتورهای کاملاً غیرهمگام AsyncEngine) هماهنگ می‌باشد.</p>
+        <p>دلایل انتخاب SQLAdmin برای پلتفرم TaskFlow عبارتند از:</p>
+        <ul>
+          <li><strong>پشتیبانی نیتیو از AsyncEngine:</strong> بر خلاف پکیج‌های قدیمی که به موتور همگام و بلاک‌کننده (Sync Engine) نیاز داشتند، SQLAdmin نسخه ۰.۳۲ به طور مستقیم با شیء <code dir="ltr">AsyncEngine</code> و نشست‌های <code dir="ltr">AsyncSession</code> کار می‌کند.</li>
+          <li><strong>پرهیز از تکثیر موتور دیتابیس (No Duplicate Engine):</strong> دقیقاً از همان شیء <code dir="ltr">app.core.database.engine</code> موجود در پروژه استفاده می‌کند و هیچ کانکشن پول موازی یا مدل تکراری ایجاد نمی‌کند.</li>
+          <li><strong>کنترل دقیق دسترسی سروری (Server-Side AuthenticationBackend):</strong> امکان اعمال سیاست‌های سخت‌گیرانه مبنی بر بررسی فیلد <code dir="ltr">is_superuser</code> در هر درخواست با نشست‌های امضاشده.</li>
+          <li><strong>محافظت از مرزهای مستأجران و فیلدهای حساس:</strong> قابلیت حذف فیلدهای امنیتی (نظیر هش رمز عبور و هش توکن‌ها) از فرم‌ها و نماها از طریق <code dir="ltr">form_excluded_columns</code> و <code dir="ltr">column_details_exclude_list</code>.</li>
+        </ul>
+      </section>
+
+      <!-- SECTION 2 -->
+      <section id="sec-2">
+        <h2><span class="num">۲</span> معماری یکپارچه‌سازی با FastAPI و دیتابیس ناهمگام</h2>
+        <p>ادغام SQLAdmin در ساختار ماژولار TaskFlow به صورت یک زیرسیستم مستقل در مسیر <code dir="ltr">backend/app/admin/</code> پیاده‌سازی شده است:</p>
+        <pre dir="ltr"><code>backend/app/admin/
+├── __init__.py       # بسته ادمین
+├── auth.py           # بک‌اند احراز هویت نشست‌محور TaskFlowAdminAuth
+├── views.py          # تعاریف ۱۳ کلاس ModelView با تنظیمات امنیتی
+└── setup.py          # تابع راه‌اندازی و اتصال ادمین به برنامه اصلی (setup_admin)
+</code></pre>
+        <p>نحوه اتصال به فست‌ای‌پی‌آی در <code dir="ltr">backend/app/main.py</code>:</p>
+        <pre dir="ltr"><code>from app.admin.setup import setup_admin
+from app.core.database import engine
+
+# ثبت و مونت پنل مدیریت در مسیر /admin
+admin = setup_admin(app, engine)
+</code></pre>
+        <div class="callout callout-info">
+          <strong>عدم تداخل با روت‌های API و کلاینت:</strong>
+          پنل مدیریت در مسیر <code dir="ltr">/admin</code> مونت شده و هیچ مداخله‌ای در روت‌های نسخه یک API (<code dir="ltr">/api/v1/*</code>)، روت سلامت (<code dir="ltr">/health</code>) یا روت‌های کلاینت SPA ایجاد نمی‌کند.
+        </div>
+      </section>
+
+      <!-- SECTION 3 -->
+      <section id="sec-3">
+        <h2><span class="num">۳</span> احراز هویت و مجوزدهی مدیر کلان (AuthenticationBackend)</h2>
+        <p>کلاس <code dir="ltr">TaskFlowAdminAuth</code> با ارث‌بری از <code dir="ltr">sqladmin.authentication.AuthenticationBackend</code> مدیریت امن نشست را تضمین می‌کند:</p>
+
+        <h3>تمایز قاطع میان مدیر سازمان و مدیر کلان سیستم</h3>
+        <div class="callout callout-warning">
+          <strong>اصل عدم ارتقای خودکار دسترسی:</strong>
+          کاربرانی که در یک فضای کاری سازمان نقش <code dir="ltr">OWNER</code> یا <code dir="ltr">ADMIN</code> دارند، <strong>به هیچ عنوان</strong> مدیر کلان سیستم محسوب نمی‌شوند. ورود به پنل SQLAdmin منحصراً نیازمند فیلد <code dir="ltr">user.is_superuser == True</code> و <code dir="ltr">user.is_active == True</code> در پایگاه داده است.
+        </div>
+
+        <h3>مراحل لاگین و تأیید نشست:</h3>
+        <ol>
+          <li><strong>بررسی نرخ تلاش ورود (Rate Limiting):</strong> بررسی آدرس IP کلاینت با محدودیت ۱۰ درخواست در دقیقه برای جلوگیری از حملات Brute-Force.</li>
+          <li><strong>اعتبارسنجی رمز عبور:</strong> اعتبارسنجی پسورد خام در برابر هش ذخیره‌شده با الگوریتم قدرتمند Argon2id.</li>
+          <li><strong>اعتبارسنجی سوپریوزر:</strong> اگر فیلد <code dir="ltr">is_superuser</code> کاربر مقدار <code dir="ltr">False</code> داشته باشد، درخواست بلافاصله رد شده و لاگ هشدار امنیتی ثبت می‌گردد.</li>
+          <li><strong>امضای نشست:</strong> ذخیره شناسه کاربر در سشن با استفاده از کلید رمزنگاری <code dir="ltr">effective_admin_secret_key</code>.</li>
+          <li><strong>بررسی در هر درخواست (Active Database Re-validation):</strong> در تابع <code dir="ltr">authenticate()</code>، شناسه کاربر در هر درخواست ورودی به صفحات ادمین از دیتابیس خوانده می‌شود تا اطمینان حاصل شود حساب کاربر فعال بوده، حذف نشده و از مقام سوپریوزر عزل نگردیده است. در صورت عزل، سشن بلافاصله باطل شده و کاربر به صفحه ورود هدایت می‌گردد.</li>
+        </ol>
+      </section>
+
+      <!-- SECTION 4 -->
+      <section id="sec-4">
+        <h2><span class="num">۴</span> دستورات CLI ایجاد و ارتقای سوپریوزر</h2>
+        <p>برای جلوگیری از ارتقای پنهانی کاربران در زمان استارت کانتینر یا ایجاد درب‌های پشتی، ابزار خط فرمان <code dir="ltr">backend/app/cli.py</code> توسعه یافته است. این دستورات نیازمند دسترسی به خط فرمان سرور یا محیط داکر هستند:</p>
+
+        <h3>۱. ایجاد مدیر ارشد جدید (یا ارتقای کاربر موجود به شکل برگشت‌پذیر):</h3>
+        <pre dir="ltr"><code>docker compose exec backend python -m app.cli create-superuser \
+    --email admin@taskflow.dev \
+    --password "StrongSuperPassword123!" \
+    --full-name "System Administrator"</code></pre>
+
+        <h3>۲. ارتقای یک کاربر موجود به سوپریوزر:</h3>
+        <pre dir="ltr"><code>docker compose exec backend python -m app.cli promote-user --email user@example.com</code></pre>
+
+        <h3>۳. عزل دسترسی سوپریوزر:</h3>
+        <pre dir="ltr"><code>docker compose exec backend python -m app.cli demote-user --email user@example.com</code></pre>
+
+        <div class="callout callout-info">
+          <strong>ویژگی قابلیت تکرارپذیری (Idempotency):</strong>
+          اگر کاربر از قبل در دیتابیس وجود داشته باشد، دستور <code dir="ltr">create-superuser</code> رکورد او را به عنوان <code dir="ltr">is_superuser=True</code> و <code dir="ltr">is_active=True</code> به‌روزرسانی کرده و رمز عبور را بدون تداخل در شناسه‌ها آپدیت می‌کند.
+        </div>
+      </section>
+
+      <!-- SECTION 5 -->
+      <section id="sec-5">
+        <h2><span class="num">۵</span> پیکربندی متغیرهای محیطی و امنیت کوکی‌ها</h2>
+        <p>تنظیمات امنیتی سشن در <code dir="ltr">backend/app/core/config.py</code> و <code dir="ltr">.env</code> به شرح زیر است:</p>
+
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>متغیر محیطی</th>
+                <th>مقدار پیش‌فرض / پیشنهادی</th>
+                <th>کاربرد امنیتی</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code dir="ltr">ADMIN_SECRET_KEY</code></td>
+                <td>رشته حداقل ۳۲ کاراکتری قوی</td>
+                <td>امضای دیجیتال و رمزنگاری سشن‌های ادمین (در صورت عدم تعریف از <code dir="ltr">SECRET_KEY</code> استفاده می‌شود)</td>
+              </tr>
+              <tr>
+                <td><code dir="ltr">COOKIE_SECURE</code></td>
+                <td><code dir="ltr">true</code> در پروداکشن / <code dir="ltr">false</code> در لوکال</td>
+                <td>ارسال کوکی نشست فقط از طریق کانال امن HTTPS</td>
+              </tr>
+              <tr>
+                <td><code dir="ltr">SAME_SITE</code></td>
+                <td><code dir="ltr">lax</code></td>
+                <td>جلوگیری از ارسال ناخواسته کوکی در حملات CSRF فرامرزی</td>
+              </tr>
+              <tr>
+                <td><code dir="ltr">session_cookie</code></td>
+                <td><code dir="ltr">taskflow_admin_session</code></td>
+                <td>نام اختصاصی کوکی نشست با صفت <code dir="ltr">HttpOnly</code></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- SECTION 6 -->
+      <section id="sec-6">
+        <h2><span class="num">۶</span> کاتالوگ نماهای مدل (ModelViews) و سیاست‌های CRUD</h2>
+        <p>تمامی ۱۳ مدل عملیاتی سامانه به طور دقیق ثبت شده و مجوزهای آن‌ها متناسب با قوانین کسب‌وکار تنظیم شده است:</p>
+
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>موجودیت (Model)</th>
+                <th>کلاس ModelView</th>
+                <th>ایجاد (Create)</th>
+                <th>ویرایش (Edit)</th>
+                <th>حذف (Delete)</th>
+                <th>علت محدودیت عملیاتی</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code dir="ltr">User</code></td>
+                <td><code dir="ltr">UserAdmin</code></td>
+                <td><span class="badge badge-danger">غیرمجاز</span></td>
+                <td><span class="badge badge-success">مجاز</span></td>
+                <td><span class="badge badge-danger">غیرمجاز</span></td>
+                <td>حذف مستقیم یکپارچگی کلیدهای خارجی را تخریب می‌کند؛ غیرفعال‌سازی از طریق <code dir="ltr">is_active</code> صورت می‌گیرد.</td>
+              </tr>
+              <tr>
+                <td><code dir="ltr">Organization</code></td>
+                <td><code dir="ltr">OrganizationAdmin</code></td>
+                <td><span class="badge badge-danger">غیرمجاز</span></td>
+                <td><span class="badge badge-success">مجاز</span></td>
+                <td><span class="badge badge-danger">غیرمجاز</span></td>
+                <td>ایجاد سازمان مستلزم انتساب عضو مالک (OWNER) است و از فرم خام ادمین مجاز نیست.</td>
+              </tr>
+              <tr>
+                <td><code dir="ltr">OrganizationMember</code></td>
+                <td><code dir="ltr">OrganizationMemberAdmin</code></td>
+                <td><span class="badge badge-danger">غیرمجاز</span></td>
+                <td><span class="badge badge-success">مجاز</span></td>
+                <td><span class="badge badge-danger">غیرمجاز</span></td>
+                <td>حذف عضو مستلزم عملیات تراکنشی برداشتن تسک‌ها (Unassign) است.</td>
+              </tr>
+              <tr>
+                <td><code dir="ltr">OrganizationInvitation</code></td>
+                <td><code dir="ltr">OrganizationInvitationAdmin</code></td>
+                <td><span class="badge badge-danger">غیرمجاز</span></td>
+                <td><span class="badge badge-danger">غیرمجاز</span></td>
+                <td><span class="badge badge-danger">غیرمجاز</span></td>
+                <td>نمای فقط-خواندنی جهت بازرسی وضعیت دعوت‌نامه‌ها و تاریخ انقضا.</td>
+              </tr>
+              <tr>
+                <td><code dir="ltr">Project</code></td>
+                <td><code dir="ltr">ProjectAdmin</code></td>
+                <td><span class="badge badge-danger">غیرمجاز</span></td>
+                <td><span class="badge badge-success">مجاز</span></td>
+                <td><span class="badge badge-danger">غیرمجاز</span></td>
+                <td>ایجاد و حذف باید از طریق سرویس پروژه‌ها برای حفظ ایزولاسیون سازمانی انجام شود.</td>
+              </tr>
+              <tr>
+                <td><code dir="ltr">ProjectMember</code></td>
+                <td><code dir="ltr">ProjectMemberAdmin</code></td>
+                <td><span class="badge badge-danger">غیرمجاز</span></td>
+                <td><span class="badge badge-success">مجاز</span></td>
+                <td><span class="badge badge-success">مجاز</span></td>
+                <td>مدیریت انتساب اعضای پروژه با امکان ویرایش نقش و لغو دسترسی.</td>
+              </tr>
+              <tr>
+                <td><code dir="ltr">Board</code></td>
+                <td><code dir="ltr">BoardAdmin</code></td>
+                <td><span class="badge badge-danger">غیرمجاز</span></td>
+                <td><span class="badge badge-success">مجاز</span></td>
+                <td><span class="badge badge-danger">غیرمجاز</span></td>
+                <td>ایجاد تابلو مستلزم تولید خودکار ستون‌های پیش‌فرض کانبان است.</td>
+              </tr>
+              <tr>
+                <td><code dir="ltr">List</code></td>
+                <td><code dir="ltr">ListAdmin</code></td>
+                <td><span class="badge badge-danger">غیرمجاز</span></td>
+                <td><span class="badge badge-danger">غیرمجاز</span></td>
+                <td><span class="badge badge-danger">غیرمجاز</span></td>
+                <td>ویرایش خام کلیدهای رتبه‌بندی LexoRank یا نسخه‌های OCC نظم ستون‌ها را مخدوش می‌کند.</td>
+              </tr>
+              <tr>
+                <td><code dir="ltr">Task</code></td>
+                <td><code dir="ltr">TaskAdmin</code></td>
+                <td><span class="badge badge-danger">غیرمجاز</span></td>
+                <td><span class="badge badge-success">مجاز</span></td>
+                <td><span class="badge badge-danger">غیرمجاز</span></td>
+                <td>امکان ویرایش عنوان، توضیحات، اولویت و موعد انجام با حفظ فیلدهای نسخه OCC.</td>
+              </tr>
+              <tr>
+                <td><code dir="ltr">Comment</code></td>
+                <td><code dir="ltr">CommentAdmin</code></td>
+                <td><span class="badge badge-danger">غیرمجاز</span></td>
+                <td><span class="badge badge-danger">غیرمجاز</span></td>
+                <td><span class="badge badge-danger">غیرمجاز</span></td>
+                <td>فقط-خواندنی جهت نظارت بر محتوای گفتگوها بدون امکان تغییر تاریخچه گفتار دیگران.</td>
+              </tr>
+              <tr>
+                <td><code dir="ltr">Notification</code></td>
+                <td><code dir="ltr">NotificationAdmin</code></td>
+                <td><span class="badge badge-danger">غیرمجاز</span></td>
+                <td><span class="badge badge-danger">غیرمجاز</span></td>
+                <td><span class="badge badge-danger">غیرمجاز</span></td>
+                <td>فقط-خواندنی جهت بازرسی اعلان‌های رویدادمحور سیستم.</td>
+              </tr>
+              <tr>
+                <td><code dir="ltr">AuditLog</code></td>
+                <td><code dir="ltr">AuditLogAdmin</code></td>
+                <td><span class="badge badge-danger">غیرمجاز</span></td>
+                <td><span class="badge badge-danger">غیرمجاز</span></td>
+                <td><span class="badge badge-danger">غیرمجاز</span></td>
+                <td><strong>کاملاً تغییرناپذیر (Immutable):</strong> هرگونه تغییر لاگ‌های ممیزی ممنوع است.</td>
+              </tr>
+              <tr>
+                <td><code dir="ltr">RefreshTokenSession</code></td>
+                <td><code dir="ltr">RefreshTokenSessionAdmin</code></td>
+                <td><span class="badge badge-danger">غیرمجاز</span></td>
+                <td><span class="badge badge-success">مجاز</span></td>
+                <td><span class="badge badge-danger">غیرمجاز</span></td>
+                <td>امکان ابطال دستی نشست‌های مشکوک با تنظیم <code dir="ltr">is_revoked = True</code>.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- SECTION 7 -->
+      <section id="sec-7">
+        <h2><span class="num">۷</span> حفاظت از داده‌های حساس و عدم افشای پسوردها</h2>
+        <p>به منظور رعایت اصول OWASP و استانداردهای امنیت سایبری:</p>
+        <ul>
+          <li><strong>حذف قطعی هش پسورد:</strong> فیلد <code dir="ltr">hashed_password</code> با استفاده از <code dir="ltr">column_details_exclude_list</code> و <code dir="ltr">form_excluded_columns</code> به طور کامل از دید و فرم‌های ویرایش خارج شده است.</li>
+          <li><strong>ممانعت از ویرایش مستقیم هش:</strong> هیچ مدیری نمی‌تواند از طریق فرم ادمین رشته هش پسورد را دستکاری کند. تغییر پسورد کاربر منحصراً باید از طریق فرایند امن یا دستور CLI صورت گیرد.</li>
+          <li><strong>حذف توکن‌های خام و هش‌های ریفرش:</strong> فیلدهای <code dir="ltr">token_hash</code> در جداول دعوت‌نامه و نشست‌های ریفرش توکن از تمام نماها و فرم‌ها مخفی شده‌اند.</li>
+        </ul>
+      </section>
+
+      <!-- SECTION 8 -->
+      <section id="sec-8">
+        <h2><span class="num">۸</span> تغییرناپذیری لاگ‌های ممیزی و حفاظت از کانبان</h2>
+        <p>لاگ‌های ممیزی در <code dir="ltr">AuditLogAdmin</code> دارای تنظیمات زیر هستند:</p>
+        <pre dir="ltr"><code>can_create = False
+can_edit = False
+can_delete = False
+</code></pre>
+        <p>این پیکربندی تضمین می‌کند که حتی مدیران کلان نیز نتوانند ردپای اقدامات ممیزی و امنیتی را پاک یا تحریف کنند.</p>
+        <p>همچنین ستون‌های کانبان (<code dir="ltr">List</code>) به دلیل وابستگی به الگوریتم‌های مرتب‌سازی کسری LexoRank و کنترل هم‌روندی نسخه OCC غیرقابل ویرایش مستقیم در فرم هستند تا از شکسته شدن یکپارچگی پایگاه داده جلوگیری شود.</p>
+      </section>
+
+      <!-- SECTION 9 -->
+      <section id="sec-9">
+        <h2><span class="num">۹</span> پیکربندی داکر و دسترسی از پورت‌های ۵۱۷۳ و ۸۰۰۰</h2>
+        <p>پنل مدیریت SQLAdmin به دو روش در دسترس است:</p>
+        <ol>
+          <li><strong>دسترسی مستقیم بک‌اند:</strong> <a href="http://localhost:8000/admin" target="_blank" dir="ltr">http://localhost:8000/admin</a></li>
+          <li><strong>دسترسی از طریق پروکسی معکوس Nginx:</strong> <a href="http://localhost:5173/admin" target="_blank" dir="ltr">http://localhost:5173/admin</a></li>
+        </ol>
+        <p>تنظیمات Nginx در <code dir="ltr">frontend/nginx.conf</code> مسیر <code dir="ltr">/admin</code> را به کانتینر بک‌اند هدایت کرده و هدرهای واقعی درخواست را عبور می‌دهد:</p>
+        <pre dir="ltr"><code>location /admin {
+    proxy_pass http://backend:8000/admin;
+    proxy_http_version 1.1;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection 'upgrade';
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+}
+</code></pre>
+      </section>
+
+      <!-- SECTION 10 -->
+      <section id="sec-10">
+        <h2><span class="num">۱۰</span> آزمون‌های خودکار امنیتی و نتایج تست‌ها</h2>
+        <p>مجموعه تست‌های یکپارچگی در فایل <code dir="ltr">backend/tests/integration/test_sqladmin_security.py</code> پیاده‌سازی شده‌اند:</p>
+        <pre dir="ltr"><code># اجرای تست‌های SQLAdmin درون کانتینر بک‌اند
+docker compose exec backend pytest tests/integration/test_sqladmin_security.py -v
+</code></pre>
+        <p>نتایج آزمون تأیید می‌کنند:</p>
+        <ul>
+          <li>هدایت کاربران ناشناس به فرم لاگین با کد وضعیت 302.</li>
+          <li>رد قطعی کاربران عادی سیستم.</li>
+          <li>رد قطعی مالکان و مدیران سازمان فاقد مقام سوپریوزر.</li>
+          <li>ورود موفق مدیر ارشد با اعتبارسنجی هش Argon2id.</li>
+          <li>پاکسازی کامل اطلاعات سشن هنگام خروج (Logout).</li>
+          <li>ابطال بلادرنگ سشن در صورت غیرفعال شدن یا عزل مدیر ارشد در دیتابیس.</li>
+          <li>حذف فیلدهای حساس از تمام نماها و عدم امکان دستکاری لاگ‌های ممیزی.</li>
+          <li>صحت کارکرد دستورات CLI ایجاد و ترفیع سوپریوزر.</li>
+        </ul>
+      </section>
+
+      <!-- SECTION 11 -->
+      <section id="sec-11">
+        <h2><span class="num">۱۱</span> راهنمای رفع اشکال (Troubleshooting)</h2>
+        <ul>
+          <li><strong>خطای <code dir="ltr">Invalid credentials</code> در زمان لاگین:</strong> ایمیل و پسورد را بررسی کنید؛ دقت فرمایید که کاربر باید حتماً فیلد <code dir="ltr">is_superuser=True</code> و <code dir="ltr">is_active=True</code> داشته باشد. با دستور <code dir="ltr">promote-user</code> وضعیت کاربر را بررسی یا ارتقا دهید.</li>
+          <li><strong>خطای <code dir="ltr">403 FORBIDDEN_ORIGIN</code> در زمان ارسال فرم:</strong> بررسی کنید که آدرس دامنه در <code dir="ltr">ALLOWED_ORIGINS</code> ثبت شده باشد یا از همان پورت فراخوانی گردد (میدلور <code dir="ltr">TrustedOriginMiddleware</code> درخواست‌های Same-Origin را معتبر می‌شناسد).</li>
+          <li><strong>مشاهده صفحه 404 در Nginx پورت ۵۱۷۳:</strong> اطمینان حاصل کنید که فایل <code dir="ltr">frontend/nginx.conf</code> بلوک <code dir="ltr">location /admin</code> را دارد و کانتینر فرانت‌اند ریستارت شده است.</li>
+        </ul>
+      </section>
+
+      <!-- SECTION 12 -->
+      <section id="sec-12">
+        <h2><span class="num">۱۲</span> ملاحظات محیط پروداکشن و گام‌های آتی</h2>
+        <ul>
+          <li><strong>تنظیم متغیرهای امنیتی:</strong> قبل از استقرار در محیط پروداکشن، کلیدهای تصادفی قوی برای <code dir="ltr">ADMIN_SECRET_KEY</code> و <code dir="ltr">SECRET_KEY</code> تنظیم کرده و <code dir="ltr">COOKIE_SECURE=true</code> قرار دهید.</li>
+          <li><strong>استفاده از گواهی SSL/TLS:</strong> ارتباط با پنل ادمین حتماً باید بر بستر پروتکل HTTPS برقرار شود تا کوکی‌های نشست در معرض استراق سمع قرار نگیرند.</li>
+          <li><strong>آینده‌نگری:</strong> در فازهای بعدی می‌توان قابلیت احراز هویت دو مرحله‌ای (2FA / TOTP) را به فرم ورود ادمین اضافه نمود.</li>
+        </ul>
+      </section>
+
+    </main>
+  </div>
+</div>
+
+</body>
+</html>
