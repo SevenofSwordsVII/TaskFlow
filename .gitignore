@@ -40,10 +40,18 @@ Thumbs.db
 .idea/
 .vscode/
 
-# Development tool runs & local artifacts
-strix_runs/
-.specify/
-specs/
-.claude/
+# Local AI coding-agent configuration and specifications
+/.specify/
+/specs/
+/.claude/
+
+# Local Strix security assessment artifacts
+/strix_runs/
+/strix/
+
+# Local-only documentation
+/docs/
+
+# Local load testing outputs
 loadtests/results/*.csv
 loadtests/results/*.html
