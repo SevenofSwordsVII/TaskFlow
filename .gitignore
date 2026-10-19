@@ -55,3 +55,4 @@ Thumbs.db
 # Local load testing outputs
 loadtests/results/*.csv
 loadtests/results/*.html
+/SECURITY_HARDENING_REPORT.md
