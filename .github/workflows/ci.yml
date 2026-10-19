@@ -213,7 +213,7 @@ jobs:
           SECRET_KEY: ci-e2e-secret-key-development-min-32-chars-long!
           ADMIN_SECRET_KEY: ci-e2e-admin-secret-key-min-32-chars!
           REFRESH_RECOVERY_KEY: ci-e2e-refresh-recovery-key-32b!
-          ALLOWED_ORIGINS: "http://localhost:5173,http://127.0.0.1:5173"
+          ALLOWED_ORIGINS: '["http://localhost:5173","http://127.0.0.1:5173"]'
         run: |
           nohup uv run uvicorn app.main:app --host 0.0.0.0 --port 8000 > /tmp/backend.log 2>&1 &
           echo "Awaiting backend healthcheck on http://localhost:8000/health..."
