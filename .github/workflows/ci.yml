@@ -94,7 +94,7 @@ jobs:
           POSTGRES_PORT: 5432
           POSTGRES_USER: taskflow
           POSTGRES_PASSWORD: taskflow_ci_test_password
-          POSTGRES_DB: taskflow_test
+          POSTGRES_DB: taskflow
           DATABASE_URL: postgresql+asyncpg://taskflow:taskflow_ci_test_password@localhost:5432/taskflow_test
           TEST_DATABASE_URL: postgresql+asyncpg://taskflow:taskflow_ci_test_password@localhost:5432/taskflow_test
         run: |
@@ -194,7 +194,7 @@ jobs:
           POSTGRES_PORT: 5432
           POSTGRES_USER: taskflow
           POSTGRES_PASSWORD: taskflow_e2e_password
-          POSTGRES_DB: taskflow_e2e_test
+          POSTGRES_DB: taskflow
           DATABASE_URL: postgresql+asyncpg://taskflow:taskflow_e2e_password@localhost:5432/taskflow_e2e_test
           TEST_DATABASE_URL: postgresql+asyncpg://taskflow:taskflow_e2e_password@localhost:5432/taskflow_e2e_test
         run: |
@@ -208,7 +208,7 @@ jobs:
           POSTGRES_PORT: 5432
           POSTGRES_USER: taskflow
           POSTGRES_PASSWORD: taskflow_e2e_password
-          POSTGRES_DB: taskflow_e2e_test
+          POSTGRES_DB: taskflow
           DATABASE_URL: postgresql+asyncpg://taskflow:taskflow_e2e_password@localhost:5432/taskflow_e2e_test
           SECRET_KEY: ci-e2e-secret-key-development-min-32-chars-long!
           ADMIN_SECRET_KEY: ci-e2e-admin-secret-key-min-32-chars!
